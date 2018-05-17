@@ -6,7 +6,7 @@ int main() {
 
 	EntityKeeper keeper;
 
-	std::cout << "LOL" << std::endl;
+	std::cout << "qsdL" << std::endl;
 	Entity e1{keeper.newEntity()};
 	std::cout << "LOL" << std::endl;
 	Entity e2 = e1;
