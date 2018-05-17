@@ -3,27 +3,19 @@
 Entity::Entity(const unsigned int id): 
 	m_ID{id},
 	m_parent{nullptr},
-	m_redirection{nullptr} {}
+	m_redirection{nullptr} { std::cout << "Constructeur: " << this << std::endl;}
 
 Entity::Entity(const Entity &entity):
 	m_ID{entity.m_ID},
 	m_parent{nullptr},
-	m_redirection{std::make_shared<Entity>(entity)} {}
-
-Entity& Entity::operator=(const Entity &entity) {
-
-	Entity newEntity{entity.m_ID};
-	newEntity.m_parent = nullptr;
-	m_redirection = std::make_shared<Entity>(entity);
-	return newEntity;
-}
+	m_redirection{&entity} {}
 
 bool Entity::operator==(const Entity &entity) { return (m_ID == entity.m_ID); }
 
 void Entity::changeParent(const Entity &newParent) { 
 
 	if(m_redirection != nullptr) { m_redirection->changeParent(newParent); } 
-	else { m_parent = std::make_shared<Entity>(newParent); }
+	else { m_parent = &newParent; }
 }
 
 void Entity::deleteParent() { 
@@ -35,7 +27,7 @@ void Entity::deleteParent() {
 void Entity::addChild(const Entity &newChild) { 
 
 	if(m_redirection != nullptr) { m_redirection->addChild(newChild);  } 
-	else { m_children.push_back(std::make_shared<Entity>(newChild)); }
+	else { m_children.push_back(newChild); }
 }
 
 void Entity::deleteChild(const Entity &childToDelete) {
@@ -45,7 +37,7 @@ void Entity::deleteChild(const Entity &childToDelete) {
 
 		for(unsigned int i{0}; i < m_children.size(); i++) {
 
-			if(*(m_children[i]) == childToDelete) { m_children.erase(m_children.begin() + i); }
+			if(m_children[i] == childToDelete) { m_children.erase(m_children.begin() + i); }
 		}
 	}
 }
@@ -55,7 +47,7 @@ void Entity::deleteEntityWithoutBackup(const Entity &entityToDelete) {
 	if(m_redirection != nullptr) { m_redirection->deleteEntityWithoutBackup(entityToDelete);  } 
 	else {
 
-		for(std::shared_ptr<Entity> currentChild: m_children) {
+		for(std::reference_wrapper<Entity> currentChild: m_children) {
 
 			if(*this == entityToDelete) { currentChild->deleteParent(); }
 
@@ -87,7 +79,7 @@ bool Entity::haveChild(const Entity &child) const {
 
 		for(std::shared_ptr<Entity> currentChild: m_children) {
 
-			if(*(currentChild) == child) { result = true; }
+			if(currentChild == child) { result = true; }
 			else if(currentChild->haveChild(child)) { result = true; }
 		}
 

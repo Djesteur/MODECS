@@ -9,12 +9,12 @@ class EntityKeeper {
 
 		EntityKeeper();
 
-		Entity newEntity();
+		Entity& newEntity();
 		void deleteEntity(const Entity &entity);
 
 	private:
 
-		std::vector<std::shared_ptr<Entity>> m_entities;
+		std::vector<Entity> m_entities;
 };
 
 

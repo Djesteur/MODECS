@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <vector>
+#include <iostream>
 
 class EntityKeeper;
 
@@ -12,7 +13,6 @@ class Entity {
 
 		Entity(const unsigned int id = 0);
 		Entity(const Entity &entity);
-		Entity& operator=(const Entity &entity);
 
 		bool operator==(const Entity &entity);
 
@@ -33,10 +33,15 @@ class Entity {
 
 		const unsigned int m_ID;
 
-		std::shared_ptr<Entity> m_parent;
-		std::vector<std::shared_ptr<Entity>> m_children;
+		Entity *m_parent;
+		/*Obligation d'utiliser un pointer nu car:
+			- Un smart pointer se construit en construisant un objet
+			- Une référence ou reéférence_wrapper ne peut pas ne pas avoir de valeur
+			*/
+		std::vector<std::reference_wrapper<Entity>> m_children;
 
-		std::shared_ptr<Entity> m_redirection;
+		const Entity *m_redirection;
+		//Pour le pointeur nu, idem qu'au dessus
 		// Si != nullptr, alors c'est une copie. On ne veut pas modifier la copie, mais l'original.
 };
 
