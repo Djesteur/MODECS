@@ -5,6 +5,7 @@ LDFLAGS  = -L /usr/local/lib/
 SRCFILE = Sources
 INCFILE = Includes
 OBJFILE = Obj
+OUTFILE = Output
 EXEFILE = .
 
 EXENAME = test
@@ -37,10 +38,12 @@ ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 all: $(EXENAME)
 
 $(EXENAME): $(OBJ)
+	@mkdir -p $(OUTFILE)
 	@mkdir -p $(EXEFILE)
 	@echo "$(LGREENCOLOR)-------------------------------------------------------------------$(ENDCOLOR)"
 	@echo "$(LGREENCOLOR)| Linking:    $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)"
 	@$(CXX) $^ -o $(EXEFILE)/$(EXENAME) $(LDFLAGS)
+	@echo "$(LGREENCOLOR)-------------------------------------------------------------------$(ENDCOLOR)"
 	@echo "$(LGREENCOLOR)| Executable: $(ENDCOLOR)$(LPURPLECOLOR)$(EXEFILE)/$(EXENAME)$(ENDCOLOR)"
 
 $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
