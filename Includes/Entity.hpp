@@ -22,6 +22,8 @@ class Entity {
 
 		bool operator==(const Entity &entity) const;
 
+		
+
 		bool isValid() const;
 
 		void changeParent(Entity &parent);

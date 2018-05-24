@@ -8,7 +8,12 @@ EntityKeeper::EntityKeeper():
 
 EntityKeeper::~EntityKeeper() {
 
+	m_entities.clear();
+
 	if(m_logFile.is_open()) { m_logFile.close(); }
+	
+	//while(m_entities.size() != 0) { m_entities.pop_back(); }
+
 }
 
 Entity& EntityKeeper::newEntity() {

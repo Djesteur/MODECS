@@ -12,7 +12,7 @@ Entity::Entity(const unsigned int id, std::ofstream *logFile):
 	m_isValid{true},
 	m_parent{nullptr},
 	m_redirection{nullptr},
-	m_logFile{logFile} { *m_logFile << "Creating a new entity ----------- " << this << " ID: " << m_ID << "\n"; }
+	m_logFile{logFile} { *m_logFile << "NewEntity ------- " << this << " ID: " << m_ID << "\n"; }
 
 Entity::Entity(const Entity &entity): 
 	m_ID{entity.m_ID},
@@ -27,7 +27,7 @@ Entity::Entity(const Entity &entity):
 		m_isValid = m_redirection->m_isValid;
 		m_logFile = m_redirection->m_logFile;
 
-		*m_logFile << "Creating a copy with contructor - " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+		*m_logFile << "CopyConstructor - " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
 	}
 
 
@@ -42,15 +42,15 @@ Entity &Entity::operator=(const Entity &entity) {
 	m_isValid = m_redirection->m_isValid;
 	m_logFile = m_redirection->m_logFile;
 
-	*m_logFile << "Affecting a copy with operator= - " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+	*m_logFile << "CopyOperator ---- " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
 
 	return *this;
 }
 
 Entity::~Entity() {
 
-	if(m_redirection == nullptr) { *m_logFile << "Destroying an original entity --- " << this << " ID: " << m_ID << "\n"; }
-	else { *m_logFile << "Destroying a copy --------------- " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n"; }
+	if(m_redirection == nullptr) { *m_logFile << "Destroying ------ " << this << " ID: " << m_ID << "\n"; }
+	else { *m_logFile << "Destroying ------ " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n"; }
  }
 
 
@@ -62,7 +62,7 @@ void Entity::changeParent(Entity &parent) {
 	else {
 
 		if(m_redirection->isValid()) { m_redirection->changeParent(parent); }
-		else { *m_logFile << "Trying to acces to an invalid entity (ID: " << m_ID << " Adress: " << m_redirection << ") from " << this << "\n"; }
+		else { *m_logFile << "InvalidAcces " << this << " (ID: " << m_ID << " Adress: " << m_redirection << ")" << "\n"; }
 	}
 }
 
