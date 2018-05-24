@@ -1,88 +1,69 @@
 #include "Entity.hpp"
 
-Entity::Entity(const unsigned int id): 
+Entity::Entity(): 
+	m_ID{0},
+	m_isValid{false},
+	m_parent{nullptr},
+	m_redirection{nullptr},
+	m_logFile{nullptr} {}
+
+Entity::Entity(const unsigned int id, std::ofstream *logFile): 
 	m_ID{id},
+	m_isValid{true},
 	m_parent{nullptr},
-	m_redirection{nullptr} { std::cout << "Constructeur: " << this << std::endl;}
+	m_redirection{nullptr},
+	m_logFile{logFile} { *m_logFile << "Creating a new entity ----------- " << this << " ID: " << m_ID << "\n"; }
 
-Entity::Entity(const Entity &entity):
+Entity::Entity(const Entity &entity): 
 	m_ID{entity.m_ID},
+	m_isValid{true},
 	m_parent{nullptr},
-	m_redirection{&entity} {}
+	m_redirection{nullptr},
+	m_logFile{nullptr} {
 
-bool Entity::operator==(const Entity &entity) { return (m_ID == entity.m_ID); }
+		if(entity.m_redirection == nullptr) { m_redirection = &const_cast<Entity&>(entity); }
+		else { m_redirection = entity.m_redirection; }
 
-void Entity::changeParent(const Entity &newParent) { 
+		m_isValid = m_redirection->m_isValid;
+		m_logFile = m_redirection->m_logFile;
 
-	if(m_redirection != nullptr) { m_redirection->changeParent(newParent); } 
-	else { m_parent = &newParent; }
+		*m_logFile << "Creating a copy with contructor - " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+	}
+
+
+Entity &Entity::operator=(const Entity &entity) {
+
+	const_cast<unsigned int&>(m_ID) = entity.m_ID;
+	m_parent = nullptr;
+
+	if(entity.m_redirection == nullptr) { m_redirection = &const_cast<Entity&>(entity); }
+	else { m_redirection = entity.m_redirection; }
+
+	m_isValid = m_redirection->m_isValid;
+	m_logFile = m_redirection->m_logFile;
+
+	*m_logFile << "Affecting a copy with operator= - " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+
+	return *this;
 }
 
-void Entity::deleteParent() { 
+Entity::~Entity() {
 
-	if(m_redirection != nullptr) { m_redirection->deleteParent(); } 
-	else { m_parent = nullptr; }
-}
-		
-void Entity::addChild(const Entity &newChild) { 
+	if(m_redirection == nullptr) { *m_logFile << "Destroying an original entity --- " << this << " ID: " << m_ID << "\n"; }
+	else { *m_logFile << "Destroying a copy --------------- " << this << " of (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n"; }
+ }
 
-	if(m_redirection != nullptr) { m_redirection->addChild(newChild);  } 
-	else { m_children.push_back(newChild); }
-}
 
-void Entity::deleteChild(const Entity &childToDelete) {
+bool Entity::operator==(const Entity& entity) const { return (m_ID == entity.m_ID); }
 
-	if(m_redirection != nullptr) { m_redirection->deleteChild(childToDelete);  } 
+void Entity::changeParent(Entity &parent) { 
+
+	if(m_redirection == nullptr) { m_parent = &parent; }
 	else {
 
-		for(unsigned int i{0}; i < m_children.size(); i++) {
-
-			if(m_children[i] == childToDelete) { m_children.erase(m_children.begin() + i); }
-		}
+		if(m_redirection->isValid()) { m_redirection->changeParent(parent); }
+		else { *m_logFile << "Trying to acces to an invalid entity (ID: " << m_ID << " Adress: " << m_redirection << ") from " << this << "\n"; }
 	}
 }
 
-void Entity::deleteEntityWithoutBackup(const Entity &entityToDelete) {
-
-	if(m_redirection != nullptr) { m_redirection->deleteEntityWithoutBackup(entityToDelete);  } 
-	else {
-
-		for(std::reference_wrapper<Entity> currentChild: m_children) {
-
-			if(*this == entityToDelete) { currentChild->deleteParent(); }
-
-			else { currentChild->deleteEntityWithoutBackup(entityToDelete); }
-		}
-	}
-}
-
-void Entity::deleteEntityWithBackup(const Entity &entityToDelete, const Entity &newParent) {
-
-	if(m_redirection != nullptr) { m_redirection->deleteEntityWithBackup(entityToDelete, newParent);  } 
-	else {
-
-		for(std::shared_ptr<Entity> currentChild: m_children) {
-
-			if(*this == entityToDelete) { currentChild->changeParent(newParent); }
-
-			else { currentChild->deleteEntityWithBackup(entityToDelete, newParent); }
-		}
-	}
-}
-
-bool Entity::haveChild(const Entity &child) const {
-
-	if(m_redirection != nullptr) { return m_redirection->haveChild(child);  } 
-	else {
-
-		bool result{false};
-
-		for(std::shared_ptr<Entity> currentChild: m_children) {
-
-			if(currentChild == child) { result = true; }
-			else if(currentChild->haveChild(child)) { result = true; }
-		}
-
-		return result;
-	}
-}
+bool Entity::isValid() const { return m_isValid; }
