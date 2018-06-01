@@ -8,6 +8,7 @@
 int main() {
 
 	sf::RenderWindow window{sf::VideoMode{800, 600}, "MODECS"};
+	window.setVerticalSyncEnabled(true);
 
 	GraphicSystem system;
 
@@ -16,7 +17,14 @@ int main() {
 	Entity e1{keeper.newEntity()}, e3{keeper.newEntity()};
 
 	system.addEntity(e1);
-	system.addComponent(e1, "SBLA");
+	std::map<std::string, std::string> componentArguments;
+	componentArguments.insert(std::make_pair("Type", "Sprite"));
+	componentArguments.insert(std::make_pair("Name", "FirstSprite"));
+	componentArguments.insert(std::make_pair("Texture", "Data/Test.png"));
+	componentArguments.insert(std::make_pair("PosX", "0"));
+	componentArguments.insert(std::make_pair("PosY", "0"));
+
+	system.addComponent(e1, componentArguments);
 
 	sf::Event event;
 
@@ -28,7 +36,10 @@ int main() {
 		}
 
 		system.update(0);
+
+		window.clear(sf::Color::Magenta);
 		system.drawComponents(window);
+		window.display();
 	}
 	
 	return 0;
@@ -36,4 +47,4 @@ int main() {
 
 /*Pour la prochaine fois:
 
-	-Créer une factory pour le systeme graphique
+	-Créer une factory pour le systeme graphique*/

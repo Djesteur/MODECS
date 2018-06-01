@@ -8,6 +8,8 @@ EntityKeeper::EntityKeeper():
 
 EntityKeeper::~EntityKeeper() {
 
+	m_logFile << "End of entity system." << std::endl;
+
 	m_entities.clear();
 
 	if(m_logFile.is_open()) { m_logFile.close(); }
