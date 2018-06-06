@@ -20,8 +20,6 @@ class GraphicComponent: public sf::Drawable {
 
 	protected:
 
-		friend class GraphicSystem; // A changer pour factory
-
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const = 0;
 
 		const std::string m_name;

@@ -15,11 +15,11 @@ class SpriteComponent: public GraphicComponent {
 
 	private:
 
-		friend class GraphicSystem; // A changer pour factory
-
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
 		sf::Sprite m_sprite;
+
+		//copie à gérer
 };
 
 

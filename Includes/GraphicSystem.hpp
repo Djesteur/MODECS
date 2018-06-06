@@ -9,12 +9,16 @@
 
 #include "Entity.hpp"
 #include "GraphicFactory.hpp"
+#include "LogWriter.hpp"
 
 using EntityAndComponent = std::pair<Entity, std::list<std::unique_ptr<GraphicComponent>>>;
 
 class GraphicSystem {
 
 	public:
+
+		GraphicSystem(const GraphicSystem &) = delete;
+		GraphicSystem &operator=(const GraphicSystem &) = delete;
 
 		GraphicSystem();
 
@@ -34,10 +38,11 @@ class GraphicSystem {
 
 		GraphicFactory m_factory;
 
+		LogWriter m_logWriter;
 
 		//Entity as ID with a list of component
 		//A optimiser: a chaque fois, on vérifie puis on applique l'operation, autant tout faire d'un coup
-		//A Rajouter: sortie dans un fichier log
+		//Log: informations dans le log ? necessite afficher Entity.m_ID
 };
 
 

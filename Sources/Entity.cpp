@@ -5,29 +5,30 @@ Entity::Entity():
 	m_isValid{false},
 	m_parent{nullptr},
 	m_redirection{nullptr},
-	m_logFile{nullptr} {}
+	m_logWriter{nullptr} {}
 
-Entity::Entity(const unsigned int id, std::ofstream *logFile): 
+Entity::Entity(const unsigned int id, LogWriter *logFile): 
 	m_ID{id},
 	m_isValid{true},
 	m_parent{nullptr},
 	m_redirection{nullptr},
-	m_logFile{logFile} { *m_logFile << "NewEntity ------- " << this << " ID: " << m_ID << "\n"; }
+	m_logWriter{logFile} { *m_logWriter << "NewEntity ------- " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " ID: " << std::to_string(m_ID) << "\n"; }
 
 Entity::Entity(const Entity &entity): 
 	m_ID{entity.m_ID},
 	m_isValid{true},
 	m_parent{nullptr},
 	m_redirection{nullptr},
-	m_logFile{nullptr} {
+	m_logWriter{nullptr} {
 
 		if(entity.m_redirection == nullptr) { m_redirection = &const_cast<Entity&>(entity); }
 		else { m_redirection = entity.m_redirection; }
 
 		m_isValid = m_redirection->m_isValid;
-		m_logFile = m_redirection->m_logFile;
+		m_logWriter = m_redirection->m_logWriter;
 
-		*m_logFile << "CopyConstructor - " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+		*m_logWriter << "CopyConstructor - " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " (ID: " << std::to_string(m_redirection->m_ID) 
+						 << " Adress: " << std::to_string(reinterpret_cast<std::uintptr_t>(m_redirection)) << ")" << "\n";
 	}
 
 
@@ -40,17 +41,19 @@ Entity &Entity::operator=(const Entity &entity) {
 	else { m_redirection = entity.m_redirection; }
 
 	m_isValid = m_redirection->m_isValid;
-	m_logFile = m_redirection->m_logFile;
+	m_logWriter = m_redirection->m_logWriter;
 
-	*m_logFile << "CopyOperator ---- " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n";
+	*m_logWriter << "CopyOperator ---- " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " (ID: " << std::to_string(m_redirection->m_ID) 
+		             << " Adress: " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << ")" << "\n";
 
 	return *this;
 }
 
 Entity::~Entity() {
 
-	if(m_redirection == nullptr) { *m_logFile << "Destroying ------ " << this << " ID: " << m_ID << "\n"; }
-	else { *m_logFile << "Destroying ------ " << this << " (ID: " << m_redirection->m_ID << " Adress: " << m_redirection << ")" << "\n"; }
+	if(m_redirection == nullptr) { *m_logWriter << "Destroying ------ " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " ID: " << std::to_string(m_ID) << "\n"; }
+	else { *m_logWriter << "Destroying ------ " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " (ID: " << std::to_string(m_redirection->m_ID) 
+							<< " Adress: " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << ")" << "\n"; }
  }
 
 
@@ -62,7 +65,8 @@ void Entity::changeParent(Entity &parent) {
 	else {
 
 		if(m_redirection->isValid()) { m_redirection->changeParent(parent); }
-		else { *m_logFile << "InvalidAcces " << this << " (ID: " << m_ID << " Adress: " << m_redirection << ")" << "\n"; }
+		else { *m_logWriter << "InvalidAcces " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << " (ID: " << std::to_string(m_ID) 
+								<< " Adress: " << std::to_string(reinterpret_cast<std::uintptr_t>(this)) << ")" << "\n"; }
 	}
 }
 

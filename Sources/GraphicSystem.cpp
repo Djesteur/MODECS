@@ -1,6 +1,6 @@
 #include "GraphicSystem.hpp"
 
-GraphicSystem::GraphicSystem() {}
+GraphicSystem::GraphicSystem(): m_logWriter{"Output/Graphics/System"} {}
 
 void GraphicSystem::update(const unsigned int elapsedNanoTime) {}
 void GraphicSystem::addComponent(const Entity &entity, std::map<std::string, std::string> &factoryParam) {

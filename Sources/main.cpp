@@ -20,7 +20,7 @@ int main() {
 	std::map<std::string, std::string> componentArguments;
 	componentArguments.insert(std::make_pair("Type", "Sprite"));
 	componentArguments.insert(std::make_pair("Name", "FirstSprite"));
-	componentArguments.insert(std::make_pair("Texture", "Data/Test.png"));
+	componentArguments.insert(std::make_pair("TextureName", "TestSprite"));
 	componentArguments.insert(std::make_pair("PosX", "0"));
 	componentArguments.insert(std::make_pair("PosY", "0"));
 
@@ -37,7 +37,7 @@ int main() {
 
 		system.update(0);
 
-		window.clear(sf::Color::Magenta);
+		window.clear(sf::Color::Black);
 		system.drawComponents(window);
 		window.display();
 	}
@@ -47,4 +47,8 @@ int main() {
 
 /*Pour la prochaine fois:
 
-	-Créer une factory pour le systeme graphique*/
+	- Gérer copie des composants
+	- Réfléchir au log du systeme
+	- Ajouter vertexArray comme composant
+
+*/

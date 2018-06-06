@@ -6,6 +6,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "LogWriter.hpp"
+
 class EntityKeeper;
 
 class Entity {
@@ -13,7 +15,7 @@ class Entity {
 	public:
 
 		Entity();
-		Entity(const unsigned int id, std::ofstream *logFile);
+		Entity(const unsigned int id, LogWriter *logWriter);
 		Entity(const Entity &entity);
 
 		Entity &operator=(const Entity &entity);
@@ -38,7 +40,7 @@ class Entity {
 		Entity *m_parent;
 		Entity *m_redirection;
 
-		std::ofstream *m_logFile;
+		LogWriter *m_logWriter;
 };
 
 

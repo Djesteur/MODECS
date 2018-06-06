@@ -1,18 +1,12 @@
 #include "EntityKeeper.hpp"
 
 EntityKeeper::EntityKeeper():
-	m_logFile{"Output/Entities"} {
-
-	if(!m_logFile.is_open()) { std::cout << "WARNING: Entity keeper can't open file Output/Entities"; } 
-}
+	m_logWriter{"Output/Entities"} {}
 
 EntityKeeper::~EntityKeeper() {
 
-	m_logFile << "End of entity system." << std::endl;
-
+	m_logWriter << "End of entity system.\n";
 	m_entities.clear();
-
-	if(m_logFile.is_open()) { m_logFile.close(); }
 }
 
 Entity& EntityKeeper::newEntity() {
@@ -32,7 +26,7 @@ Entity& EntityKeeper::newEntity() {
 		else { it++; }
 	}
 
-	m_entities.emplace_back(maxEntityID, &m_logFile);
+	m_entities.emplace_back(maxEntityID, &m_logWriter);
 
 	return m_entities.back();
 }

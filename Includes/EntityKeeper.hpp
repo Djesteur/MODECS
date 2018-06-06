@@ -5,10 +5,14 @@
 #include <fstream>
 
 #include "Entity.hpp"
+#include "LogWriter.hpp"
 
 class EntityKeeper {
 
 	public:
+
+		EntityKeeper(const Entity &) = delete;
+		EntityKeeper &operator=(const Entity &) = delete;
 
 		EntityKeeper();
 		~EntityKeeper();
@@ -21,7 +25,8 @@ class EntityKeeper {
 	private:
 
 		std::list<Entity> m_entities;
-		std::ofstream m_logFile;
+		
+		LogWriter m_logWriter;
 };
 
 

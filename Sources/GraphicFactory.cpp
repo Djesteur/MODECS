@@ -1,6 +1,6 @@
 #include "GraphicFactory.hpp"
 
-GraphicFactory::GraphicFactory() {}
+GraphicFactory::GraphicFactory(): m_logWriter{"Output/Graphics/Factory"} {}
 
 std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std::map<std::string, std::string> &factoryParam) {
 
@@ -24,11 +24,21 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createSpriteComponent(const st
 
 	std::unique_ptr<GraphicComponent> newSpriteComponent{nullptr};
 
-	if(factoryParam.find("Texture") != factoryParam.end()) {
+	if(factoryParam.find("TextureName") != factoryParam.end()) {
 
-		newSpriteComponent = std::make_unique<SpriteComponent>(factoryParam.find("Name")->second, m_textureKeeper.getTexture(factoryParam.find("Texture")->second));
+		newSpriteComponent = std::make_unique<SpriteComponent>(factoryParam.find("Name")->second, m_textureKeeper.getTexture(factoryParam.find("TextureName")->second));
+		m_logWriter << "Creating new sprite at adress " << std::to_string(reinterpret_cast<std::uintptr_t>(newSpriteComponent.get())) << " with arguments: \n";
+		writeArgumentsToLog(factoryParam);
 		//Rajouter rectangle sur la texture
 	}
 
 	return newSpriteComponent;
+}
+
+void GraphicFactory::writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam) {
+
+	for(std::pair<std::string, std::string> currentPair: factoryParam) {
+
+		m_logWriter << "\t" + currentPair.first << " - " << currentPair.second << "\n";
+	}
 }
