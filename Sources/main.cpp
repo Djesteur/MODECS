@@ -18,11 +18,38 @@ int main() {
 
 	system.addEntity(e1);
 	std::map<std::string, std::string> componentArguments;
-	componentArguments.insert(std::make_pair("Type", "Sprite"));
-	componentArguments.insert(std::make_pair("Name", "FirstSprite"));
-	componentArguments.insert(std::make_pair("TextureName", "TestSprite"));
-	componentArguments.insert(std::make_pair("PosX", "0"));
-	componentArguments.insert(std::make_pair("PosY", "0"));
+	componentArguments.insert(std::make_pair("Type", "VertexArray"));
+	componentArguments.insert(std::make_pair("Name", "FirstVertex"));
+	componentArguments.insert(std::make_pair("TextureName", "Building"));
+	componentArguments.insert(std::make_pair("PosX", "300"));
+	componentArguments.insert(std::make_pair("PosY", "300"));
+	componentArguments.insert(std::make_pair("VertexNumber", "7"));
+
+	const unsigned int s{32};
+	sf::Vector2f center{300, 300}, currentPoint{332, 300}, diff{0, 0}, newPoint{0, 0};
+
+	componentArguments.insert(std::make_pair("Vertex0X", std::to_string(currentPoint.x)));
+	componentArguments.insert(std::make_pair("Vertex0Y", std::to_string(currentPoint.y)));
+
+	std::cout << "(" << currentPoint.x << ", " << currentPoint.y << "): " << 0 << std::endl;
+
+	const float PI{3.14159265};
+
+	for(unsigned int i{1}; i < 7; i++) {
+
+		diff.x = currentPoint.x - center.x;
+		diff.y = currentPoint.y - center.y;
+
+		newPoint.x = currentPoint.x + diff.x*cos(PI/3.f) - diff.y*sin(PI/3.f);
+		newPoint.y = currentPoint.y + diff.x*sin(PI/3.f) + diff.y*cos(PI/3.f); 
+
+		currentPoint = newPoint;
+
+		componentArguments.insert(std::make_pair("Vertex" + std::to_string(i) + "X", std::to_string(currentPoint.x)));
+		componentArguments.insert(std::make_pair("Vertex" + std::to_string(i) + "Y", std::to_string(currentPoint.y)));
+
+		std::cout << "(" << currentPoint.x << ", " << currentPoint.y << "): " << i << std::endl;
+	}
 
 	system.addComponent(e1, componentArguments);
 
@@ -47,8 +74,7 @@ int main() {
 
 /*Pour la prochaine fois:
 
-	- Gérer copie des composants
+	- Gérer copie des composants (impossible ?)
 	- Réfléchir au log du systeme
 	- Ajouter vertexArray comme composant
-
 */

@@ -15,10 +15,21 @@ std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std:
 
 		//Rajouter des attributs commun à tous les composants graphiques (position, ...)
 		//currentEntity.second.back()->m_sprite.setPosition(sf::Vector2f{std::stof(factoryParam["PosX"]), std::stof(factoryParam["PosY"])});
+
+		if(factoryParam.find("PosX") != factoryParam.end() && factoryParam.find("PosY") != factoryParam.end()) {
+
+			newComponent->setPosition(sf::Vector2f{std::stof(factoryParam.find("PosX")->second), std::stof(factoryParam.find("PosY")->second)});
+		}
 	}
 
 	return newComponent;
 }
+
+/*std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std::unique_ptr<GraphicComponent> base) {
+
+	std::unique_ptr<GraphicComponent> newComponent{std::make_unique<GraphicComponent>(*base)};
+	return newComponent;
+}*/
 
 std::unique_ptr<GraphicComponent> GraphicFactory::createSpriteComponent(const std::map<std::string, std::string> &factoryParam) {
 

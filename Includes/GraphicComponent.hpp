@@ -12,7 +12,12 @@ class GraphicComponent: public sf::Drawable {
 
 	public:
 
+		GraphicComponent();
 		GraphicComponent(const std::string &name, std::shared_ptr<sf::Texture> texture);
+		GraphicComponent(const GraphicComponent &component);
+		GraphicComponent &operator=(const GraphicComponent &component);
+
+		virtual void setPosition(const sf::Vector2f newPosition) = 0;
 
 		virtual void update(const unsigned int elapsedNanoTime) = 0;
 

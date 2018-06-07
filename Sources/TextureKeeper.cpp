@@ -10,14 +10,14 @@ TextureKeeper::TextureKeeper(): m_logWriter{"Output/Graphics/TextureKeeper"} {
 	const unsigned int errorSize{64};
 
 	sf::Image image;
-	image.create(errorSize, errorSize, sf::Color::Black);
+	image.create(errorSize, errorSize, sf::Color::Magenta);
 
 	for(unsigned int i{0}; i < errorSize; i++) {
 		for(unsigned int j{0}; j < errorSize; j++) {
 
 			if(i == j || i == errorSize - j || i == 0 || i == errorSize-1 || j == 0 || j == errorSize-1) {
 
-				image.setPixel(i, j, sf::Color::White);
+				image.setPixel(i, j, sf::Color::Yellow);
 			}
 		}
 	}

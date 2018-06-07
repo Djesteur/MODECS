@@ -3,13 +3,16 @@
 
 #include "GraphicComponent.hpp"
 
-class GraphicSystem;
-
 class SpriteComponent: public GraphicComponent {
 
 	public:
 
+		SpriteComponent();
 		SpriteComponent(const std::string &name, std::shared_ptr<sf::Texture> texture);
+		SpriteComponent(const SpriteComponent &component);
+		SpriteComponent &operator=(const SpriteComponent &component);
+
+		virtual void setPosition(const sf::Vector2f newPosition);
 
 		virtual void update(const unsigned int elapsedNanoTime);
 

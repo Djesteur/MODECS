@@ -1,6 +1,8 @@
 #ifndef GRAPHICFACTORY_HPP
 #define GRAPHICFACTORY_HPP
 
+#include <string>
+
 #include "TextureKeeper.hpp"
 #include "SpriteComponent.hpp"
 
@@ -13,10 +15,10 @@ class GraphicFactory {
 		GraphicFactory(const GraphicFactory &) = delete;
 		GraphicFactory &operator=(const GraphicFactory &) = delete;
 
-
 		GraphicFactory();
 
 		std::unique_ptr<GraphicComponent> newGraphicComponent(const std::map<std::string, std::string> &factoryParam);
+		//std::unique_ptr<GraphicComponent> newGraphicComponent(const std::unique_ptr<GraphicComponent> base);
 
 	private:
 

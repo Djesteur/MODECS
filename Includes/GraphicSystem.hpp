@@ -32,6 +32,10 @@ class GraphicSystem {
 
 		void drawComponents(sf::RenderWindow &window) const;
 
+		void copyComponents(const Entity &from, const Entity &to);
+
+		void setPosition(const Entity &entity, const sf::Vector2f newPosition);
+
 	private:
 
 		std::list<EntityAndComponent> m_datas;

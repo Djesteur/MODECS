@@ -11,7 +11,9 @@ void GraphicSystem::addComponent(const Entity &entity, std::map<std::string, std
 
 			if(currentEntity.first == entity) {
 
-				currentEntity.second.emplace_back(m_factory.newGraphicComponent(factoryParam));
+				std::unique_ptr<GraphicComponent> newComponent{m_factory.newGraphicComponent(factoryParam)};
+
+				if(newComponent != nullptr) { currentEntity.second.emplace_back(std::move(newComponent)); }
 			}
 		}
 	}
@@ -57,6 +59,47 @@ void GraphicSystem::drawComponents(sf::RenderWindow &window) const {
 		for(const std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
 
 			window.draw(*currentComponent);
+		}
+	}
+}
+
+void GraphicSystem::copyComponents(const Entity &from, const Entity &to) {
+
+	/*if(isInSystem(from) && isInSystem(to)) {
+
+		for(const EntityAndComponent &fromEntity: m_datas) {
+
+			if(fromEntity.first == from) {
+
+				for(EntityAndComponent &toEntity: m_datas) {
+
+					if(toEntity.first == to) {
+
+						for(std::unique_ptr<GraphicComponent> &currentComponent: fromEntity.second) {
+
+							//toEntity.second.emplace_back(m_factory.newGraphicComponent(currentComponent));
+						}
+					}
+				}
+			}
+		}
+	}*/
+}
+
+
+void GraphicSystem::setPosition(const Entity &entity, const sf::Vector2f newPosition) {
+
+	if(isInSystem(entity)) {
+
+		for(EntityAndComponent &currentEntity: m_datas) {
+
+			if(currentEntity.first == entity) {
+
+				for(std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
+
+					currentComponent->setPosition(newPosition);
+				}
+			}
 		}
 	}
 }
