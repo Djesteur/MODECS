@@ -40,6 +40,8 @@ TextureKeeper::TextureKeeper(): m_logWriter{"Output/Graphics/TextureKeeper"} {
 			iss.str(currentData);
 			iss >> textureName >> texturePath;
 			m_pathToTextures.insert(std::make_pair(textureName, texturePath));
+
+			iss.clear();
 		}
 
 		m_logWriter << "Corresponding file loaded.\n";
@@ -67,6 +69,8 @@ std::shared_ptr<sf::Texture> TextureKeeper::getTexture(const std::string name) {
 
 		else { isValid = true; }
 	}
+
+	else { m_logWriter << "Asking for texture " << name << ", which have an unknow path.\n"; }
 
 	if(isValid) { return m_textures[name]; }
 

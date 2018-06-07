@@ -22,7 +22,9 @@ class VertexArrayComponent: public GraphicComponent {
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
 		sf::VertexArray m_array;
-		//const bool m_usingTexture;
+		const bool m_usingTexture;
+
+		std::vector<sf::Vector2f> m_originalPosition; //Needed for setPosition function
 
 		//copie à gérer
 };

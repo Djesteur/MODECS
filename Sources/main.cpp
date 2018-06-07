@@ -20,26 +20,42 @@ int main() {
 	std::map<std::string, std::string> componentArguments;
 	componentArguments.insert(std::make_pair("Type", "VertexArray"));
 	componentArguments.insert(std::make_pair("Name", "FirstVertex"));
-	//componentArguments.insert(std::make_pair("TextureName", "Building"));
+	componentArguments.insert(std::make_pair("TextureName", "Test"));
 	componentArguments.insert(std::make_pair("VertexArrayType", "TriangleFan"));
-	//componentArguments.insert(std::make_pair("PosX", "300"));
-	//componentArguments.insert(std::make_pair("PosY", "300"));
+	componentArguments.insert(std::make_pair("PosX", "400"));
+	componentArguments.insert(std::make_pair("PosY", "300"));
 	componentArguments.insert(std::make_pair("VertexNumber", "8"));
 
-	const unsigned int s{64};
-	sf::Vector2f center{300, 300}, newPoint{0, 0};
-
+	const unsigned int s{128};
 	const float PI{3.14159265};
+	const sf::Vector2f imageCenter{272.f, 272.f};
 
-	for(unsigned int i{0}; i < 8; i++) {
+	sf::Vector2f center{0, 0}, newPoint{center}, diff{0, 0};
 
-		newPoint.x = center.x + s*cos(i*60.f*PI/180.f) - s*sin(i*60.f*PI/180.f);
-		newPoint.y = center.y + s*sin(i*60.f*PI/180.f) + s*cos(i*60.f*PI/180.f); 
+	componentArguments.insert(std::make_pair("VerticePosition-0-X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition-0-Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture-0-X", std::to_string(imageCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture-0-Y", std::to_string(imageCenter.y + newPoint.y)));
 
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i) + "-X", std::to_string(newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i) + "-Y", std::to_string(newPoint.y)));
+	newPoint.x = center.x;
+	newPoint.y = center.y + s;
 
-		componentArguments.insert(std::make_pair("VerticeColor-" + std::to_string(i), "00FFFFFF"));
+	componentArguments.insert(std::make_pair("VerticePosition-1-X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition-1-Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture-1-X", std::to_string(imageCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture-1-Y", std::to_string(imageCenter.y + newPoint.y)));
+
+	for(unsigned int i{0}; i < 6; i++) {
+
+		diff = newPoint - center;
+
+		newPoint.x = center.x + diff.x*cos(60.f*PI/180.f) - diff.y*sin(60.f*PI/180.f);
+		newPoint.y = center.y + diff.x*sin(60.f*PI/180.f) + diff.y*cos(60.f*PI/180.f);
+
+		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-X", std::to_string(newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-Y", std::to_string(newPoint.y)));
+		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-X", std::to_string(imageCenter.x + newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-Y", std::to_string(imageCenter.y + newPoint.y)));
 	}
 
 	system.addComponent(e1, componentArguments);
@@ -67,5 +83,4 @@ int main() {
 
 	- Gérer copie des composants (impossible ?)
 	- Réfléchir au log du systeme
-	- Ajouter vertexArray comme composant
 */

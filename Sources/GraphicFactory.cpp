@@ -76,6 +76,16 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 		if(factoryParam.find("TextureName") != factoryParam.end()) {
 
+			for(unsigned int i{0}; i < nbVertices; i++) {
+
+				if(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-X") != factoryParam.end() &&
+				   factoryParam.find("VerticeTexture-" + std::to_string(i) + "-Y") != factoryParam.end()) {
+
+					array[i].texCoords = sf::Vector2f{std::stof(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-X")->second),
+												      std::stof(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-Y")->second)};
+				}
+			}
+
 			newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second, 
 																			 m_textureKeeper.getTexture(factoryParam.find("TextureName")->second), 
 																			 array);
@@ -83,12 +93,19 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 		else { 
 
+			for(unsigned int i{0}; i < nbVertices; i++) {
+
+				if(factoryParam.find("VerticeColor-" + std::to_string(i)) != factoryParam.end()) {
+
+					array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor-" + std::to_string(i))->second))};
+				}
+			}
+
 			newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second,array);
 		}
 
 		m_logWriter << "Creating new VertexArray at adress " << std::to_string(reinterpret_cast<std::uintptr_t>(newVertexArrayComponent.get())) << " with arguments: \n";
 		writeArgumentsToLog(factoryParam);
-		//Rajouter rectangle sur la texture
 	}
 
 	return newVertexArrayComponent;
@@ -98,7 +115,7 @@ void GraphicFactory::writeArgumentsToLog(const std::map<std::string, std::string
 
 	for(std::pair<std::string, std::string> currentPair: factoryParam) {
 
-		m_logWriter << "\t" + currentPair.first << " - " << currentPair.second << "\n";
+		m_logWriter << "\t" + currentPair.first << ": " << currentPair.second << "\n";
 	}
 }
 
