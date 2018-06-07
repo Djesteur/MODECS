@@ -2,9 +2,12 @@
 #define GRAPHICFACTORY_HPP
 
 #include <string>
+#include <iomanip>
+#include <string>
 
 #include "TextureKeeper.hpp"
 #include "SpriteComponent.hpp"
+#include "VertexArrayComponent.hpp"
 
 #include "LogWriter.hpp"
 
@@ -18,11 +21,11 @@ class GraphicFactory {
 		GraphicFactory();
 
 		std::unique_ptr<GraphicComponent> newGraphicComponent(const std::map<std::string, std::string> &factoryParam);
-		//std::unique_ptr<GraphicComponent> newGraphicComponent(const std::unique_ptr<GraphicComponent> base);
 
 	private:
 
 		std::unique_ptr<GraphicComponent> createSpriteComponent(const std::map<std::string, std::string> &factoryParam);
+		std::unique_ptr<GraphicComponent> createVertexArrayComponent(const std::map<std::string, std::string> &factoryParam);
 
 		void writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam);
 
@@ -32,9 +35,10 @@ class GraphicFactory {
 
 		/* A rajouter:
 
-			- Ajouter vertexVector
 			- Ajouter animation (composant animation à faire)*/
 };
 
+std::vector<std::string> splitDatas(const std::string &datas, const char spliter);
+unsigned int convertStringHexToUnsigned(const std::string &hexaString);
 
 #endif

@@ -20,35 +20,26 @@ int main() {
 	std::map<std::string, std::string> componentArguments;
 	componentArguments.insert(std::make_pair("Type", "VertexArray"));
 	componentArguments.insert(std::make_pair("Name", "FirstVertex"));
-	componentArguments.insert(std::make_pair("TextureName", "Building"));
-	componentArguments.insert(std::make_pair("PosX", "300"));
-	componentArguments.insert(std::make_pair("PosY", "300"));
-	componentArguments.insert(std::make_pair("VertexNumber", "7"));
+	//componentArguments.insert(std::make_pair("TextureName", "Building"));
+	componentArguments.insert(std::make_pair("VertexArrayType", "TriangleFan"));
+	//componentArguments.insert(std::make_pair("PosX", "300"));
+	//componentArguments.insert(std::make_pair("PosY", "300"));
+	componentArguments.insert(std::make_pair("VertexNumber", "8"));
 
-	const unsigned int s{32};
-	sf::Vector2f center{300, 300}, currentPoint{332, 300}, diff{0, 0}, newPoint{0, 0};
-
-	componentArguments.insert(std::make_pair("Vertex0X", std::to_string(currentPoint.x)));
-	componentArguments.insert(std::make_pair("Vertex0Y", std::to_string(currentPoint.y)));
-
-	std::cout << "(" << currentPoint.x << ", " << currentPoint.y << "): " << 0 << std::endl;
+	const unsigned int s{64};
+	sf::Vector2f center{300, 300}, newPoint{0, 0};
 
 	const float PI{3.14159265};
 
-	for(unsigned int i{1}; i < 7; i++) {
+	for(unsigned int i{0}; i < 8; i++) {
 
-		diff.x = currentPoint.x - center.x;
-		diff.y = currentPoint.y - center.y;
+		newPoint.x = center.x + s*cos(i*60.f*PI/180.f) - s*sin(i*60.f*PI/180.f);
+		newPoint.y = center.y + s*sin(i*60.f*PI/180.f) + s*cos(i*60.f*PI/180.f); 
 
-		newPoint.x = currentPoint.x + diff.x*cos(PI/3.f) - diff.y*sin(PI/3.f);
-		newPoint.y = currentPoint.y + diff.x*sin(PI/3.f) + diff.y*cos(PI/3.f); 
+		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i) + "-X", std::to_string(newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i) + "-Y", std::to_string(newPoint.y)));
 
-		currentPoint = newPoint;
-
-		componentArguments.insert(std::make_pair("Vertex" + std::to_string(i) + "X", std::to_string(currentPoint.x)));
-		componentArguments.insert(std::make_pair("Vertex" + std::to_string(i) + "Y", std::to_string(currentPoint.y)));
-
-		std::cout << "(" << currentPoint.x << ", " << currentPoint.y << "): " << i << std::endl;
+		componentArguments.insert(std::make_pair("VerticeColor-" + std::to_string(i), "00FFFFFF"));
 	}
 
 	system.addComponent(e1, componentArguments);

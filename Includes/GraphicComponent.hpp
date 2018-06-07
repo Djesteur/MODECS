@@ -32,5 +32,4 @@ class GraphicComponent: public sf::Drawable {
 		std::shared_ptr<sf::Texture> m_texture;
 };
 
-
 #endif

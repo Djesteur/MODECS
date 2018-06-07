@@ -25,5 +25,4 @@ class SpriteComponent: public GraphicComponent {
 		//copie à gérer
 };
 
-
 #endif
