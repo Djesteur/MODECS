@@ -31,6 +31,17 @@ bool GraphicSystem::isInSystem(const Entity &entity) const {
 	return false;
 }
 
+void GraphicSystem::deleteEntity(const Entity &entity) {
+
+	if(isInSystem(entity)) {
+
+		for(std::list<EntityAndComponent>::iterator it = m_datas.begin(); it != m_datas.end(); it++) {
+
+			if(it->first == entity) { m_datas.erase(it); return; }
+		}
+	}
+}
+
 bool GraphicSystem::haveComponent(const Entity &entity, const std::string &name) const { 
 
 	if(!isInSystem(entity)) { return false; }
@@ -63,11 +74,11 @@ void GraphicSystem::drawComponents(sf::RenderWindow &window) const {
 	}
 }
 
-void GraphicSystem::copyComponents(const Entity &from, const Entity &to) {
+void GraphicSystem::copyAllComponents(const Entity &from, const Entity &to) {
 
-	/*if(isInSystem(from) && isInSystem(to)) {
+	if(isInSystem(from) && isInSystem(to)) {
 
-		for(const EntityAndComponent &fromEntity: m_datas) {
+		for(EntityAndComponent &fromEntity: m_datas) {
 
 			if(fromEntity.first == from) {
 
@@ -77,13 +88,13 @@ void GraphicSystem::copyComponents(const Entity &from, const Entity &to) {
 
 						for(std::unique_ptr<GraphicComponent> &currentComponent: fromEntity.second) {
 
-							//toEntity.second.emplace_back(m_factory.newGraphicComponent(currentComponent));
+							toEntity.second.emplace_back(currentComponent->clone());
 						}
 					}
 				}
 			}
 		}
-	}*/
+	}
 }
 
 

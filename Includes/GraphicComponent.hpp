@@ -21,6 +21,8 @@ class GraphicComponent: public sf::Drawable {
 
 		virtual void update(const unsigned int elapsedNanoTime) = 0;
 
+		virtual std::unique_ptr<GraphicComponent> clone() const = 0;
+
 		bool isNamed(const std::string &possibleName) const;
 
 	protected:

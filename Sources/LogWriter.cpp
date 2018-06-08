@@ -14,7 +14,7 @@ void LogWriter::write(const std::string data) {
 
 	if(m_canWrite) {
 
-		try { m_logFile << data; }
+		try { m_logFile << data << std::flush; }
 		catch(const std::exception &e) { std::cerr << e.what(); }
 	}
 }

@@ -34,6 +34,8 @@ VertexArrayComponent &VertexArrayComponent::operator=(const VertexArrayComponent
 	return *this;
 }
 
+std::unique_ptr<GraphicComponent> VertexArrayComponent::clone() const { return std::make_unique<VertexArrayComponent>(*this); }
+
 void VertexArrayComponent::setPosition(const sf::Vector2f newPosition) { 
 
 	for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_array[i].position = newPosition + m_originalPosition[i]; }

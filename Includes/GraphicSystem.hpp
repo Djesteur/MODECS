@@ -27,12 +27,14 @@ class GraphicSystem {
 		void addEntity(const Entity &entity);
 		void addComponent(const Entity &entity, std::map<std::string, std::string> &factoryParam);
 
+		void deleteEntity(const Entity &entity);
+
 		bool isInSystem(const Entity &entity) const;
 		bool haveComponent(const Entity &entity, const std::string &name) const;
 
 		void drawComponents(sf::RenderWindow &window) const;
 
-		void copyComponents(const Entity &from, const Entity &to);
+		void copyAllComponents(const Entity &from, const Entity &to);
 
 		void setPosition(const Entity &entity, const sf::Vector2f newPosition);
 

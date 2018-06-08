@@ -17,9 +17,11 @@ SpriteComponent::SpriteComponent(const SpriteComponent &component):
 SpriteComponent &SpriteComponent::operator=(const SpriteComponent &component) {
 
 	GraphicComponent::operator=(component);
+	m_sprite.setTexture(*m_texture);
 	return *this;
 }
 
+std::unique_ptr<GraphicComponent> SpriteComponent::clone() const { return std::make_unique<SpriteComponent>(*this); }
 
 void SpriteComponent::setPosition(const sf::Vector2f newPosition) { m_sprite.setPosition(newPosition); }
 

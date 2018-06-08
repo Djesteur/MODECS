@@ -13,6 +13,8 @@ class VertexArrayComponent: public GraphicComponent {
 		VertexArrayComponent(const VertexArrayComponent &component);
 		VertexArrayComponent &operator=(const VertexArrayComponent &component);
 
+		std::unique_ptr<GraphicComponent> clone() const;
+
 		virtual void setPosition(const sf::Vector2f newPosition);
 
 		virtual void update(const unsigned int elapsedNanoTime);
@@ -25,8 +27,6 @@ class VertexArrayComponent: public GraphicComponent {
 		const bool m_usingTexture;
 
 		std::vector<sf::Vector2f> m_originalPosition; //Needed for setPosition function
-
-		//copie à gérer
 };
 
 #endif

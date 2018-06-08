@@ -48,6 +48,6 @@ void EntityKeeper::deleteEntity(const Entity &entity) {
 
 	for(std::list<Entity>::iterator it{m_entities.begin()}; it != m_entities.end(); it++) {
 
-		if(*it == entity) { m_entities.erase(it); }
+		if(*it == entity) { m_entities.erase(it); it = m_entities.end(); }
 	}
 }
