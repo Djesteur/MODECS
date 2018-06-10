@@ -5,9 +5,12 @@
 #include <vector>
 #include <string>
 
+#include <SFML/Graphics.hpp>
+
 #include "EntityKeeper.hpp"
 #include "LogWriter.hpp"
-#include "GraphicSystem.hpp"
+
+#define PI 3.14159265
 
 class MapCreator {
 
@@ -17,17 +20,12 @@ class MapCreator {
 		MapCreator(const Entity &) = delete;
 		MapCreator &operator=(const Entity &) = delete;
 
-		std::list<Entity> create(EntityKeeper &keeper, GraphicSystem &system, const sf::Vector2u mapSize);
+		void create(const sf::Vector2u mapSize, const unsigned int tileSize);
 
 	private:
-
-		std::map<std::string, std::string> constructHexa(const std::string textureName);
 		
 		LogWriter m_logWriter;
 };
-
-std::vector<std::string> splitDatas(const std::string &datas, const char spliter);
-
 
 //Rajouter gestion des erreurs dans le chargement
 

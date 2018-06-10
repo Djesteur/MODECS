@@ -4,6 +4,7 @@
 
 #include "GraphicSystem.hpp"
 #include "EntityKeeper.hpp"
+#include "MapLoader.hpp"
 #include "MapCreator.hpp"
 
 int main() {
@@ -14,8 +15,13 @@ int main() {
 	GraphicSystem system;
 	EntityKeeper keeper;
 
+	const unsigned int tileSize{128};
+
 	MapCreator creator;
-	creator.create(keeper, system, sf::Vector2u{10, 10});
+	creator.create(sf::Vector2u{3, 3}, tileSize);
+
+	MapLoader loader;
+	loader.load(keeper, system, tileSize);
 	
 	sf::Event event;
 

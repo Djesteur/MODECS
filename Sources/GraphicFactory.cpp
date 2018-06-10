@@ -51,6 +51,7 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 		if(factoryParam.find("VertexArrayType")->second == "LineStrip") { array.setPrimitiveType(sf::LineStrip); }
 		if(factoryParam.find("VertexArrayType")->second == "TriangleFan") { array.setPrimitiveType(sf::TriangleFan); }
+		if(factoryParam.find("VertexArrayType")->second == "Quads") { array.setPrimitiveType(sf::Quads); }
 		//Mettre les autres types
 
 		const unsigned int nbVertices{static_cast<unsigned int>(std::stoul(factoryParam.find("VertexNumber")->second))};
