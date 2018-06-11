@@ -40,6 +40,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 			sf::Vector2f pos{(i%mapSize.x)*tileSpace + ((i/mapSize.x)%2)*spacement.x,
 							 (i/mapSize.x)*spacement.y};
 
+							 std::cout << pos.x << " " << pos.y << std::endl;
+
 			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
 			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
 			mapFile << "Rotation!0" << std::endl;
@@ -148,8 +150,6 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 			mapFile << std::endl;
 
 			currentHexa = i + 1 + i/(2*mapSize.x-1);
-			std::cout << i << " " << currentHexa << std::endl;
-
 
 			pos.x = (currentHexa%mapSize.x)*tileSpace + ((currentHexa/mapSize.x)%2)*spacement.x - (tileSpace/2.f)*cosf(PI/3.f);
 			pos.y = (currentHexa/mapSize.x)*spacement.y + (tileSpace/2.f)*sinf(PI/3.f);
@@ -159,6 +159,58 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 			mapFile << "Rotation!-60" << std::endl;
 
 			mapFile << "/!\\" << std::endl;
+		}
+
+		//Triangles
+
+		std::deque<sf::Vector2f> usedHexagon;
+		usedHexagon.emplace_back(0.f, 0.f);
+		usedHexagon.emplace_back(spacement.x, spacement.y);
+		usedHexagon.emplace_back(tileSpace, 0);
+
+		sf::Vector2f triangleCenter{0.f, 0.f};
+
+		for(unsigned int i{0}; i < (mapSize.x+1)*(mapSize.y-1); i++) {
+
+			mapFile << "Clone!";
+
+			switch(random(engine)) {
+
+				case 1:
+					mapFile << "TriangleMountains";
+					break;
+
+				case 2:
+					mapFile << "TriangleOcean";
+					break;
+
+				case 3:
+					mapFile << "TrianglePlains";
+					break;
+			}
+
+			mapFile << std::endl;
+
+			triangleCenter = sf::Vector2f{0.f, 0.f};
+
+			for(sf::Vector2f currentPos: usedHexagon) { triangleCenter += currentPos; std::cout << currentPos.x << " " << currentPos.y << std::endl; }
+			triangleCenter /= static_cast<float>(usedHexagon.size());
+
+			mapFile << "PositionX!" << std::to_string(triangleCenter.x) << std::endl;
+			mapFile << "PositionY!" << std::to_string(triangleCenter.y) << std::endl;
+
+			mapFile << "/!\\" << std::endl;
+
+			//Pivot
+
+			usedHexagon.pop_front();
+
+			if(i == mapSize.x-1) { //Changement de ligne
+
+
+			}
+
+			else {}
 		}
 
 		mapFile.close();

@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <deque>
 
 #include <SFML/Graphics.hpp>
 

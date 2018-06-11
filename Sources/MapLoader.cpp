@@ -22,7 +22,7 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 	while(std::getline(tmpEntitiesFile, currentData)) {
 
-		splitedDatas = splitDatas(currentData, '-');
+		splitedDatas = splitDatas(currentData, '!');
 		correspondingTilePath.insert(std::make_pair(splitedDatas[0], splitedDatas[1]));
 		correspondingTileEntity.insert(std::make_pair(splitedDatas[0], Entity{keeper.newEntity()}));
 		system.addEntity(correspondingTileEntity[splitedDatas[0]]);	
@@ -198,36 +198,23 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 	componentArguments.insert(std::make_pair("Type", "VertexArray"));
 	componentArguments.insert(std::make_pair("Name", "GraphicTile"));
 	componentArguments.insert(std::make_pair("TextureName", textureName));
-	componentArguments.insert(std::make_pair("VertexArrayType", "Triangle"));
+	componentArguments.insert(std::make_pair("VertexArrayType", "TriangleFan"));
 	componentArguments.insert(std::make_pair("VertexNumber", "3"));
 
-	sf::Vector2f center{0, 0}, newPoint{center}, diff{0, 0};
+	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(0)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string((-2.f/3.f)*static_cast<float>(static_cast<float>(size)))));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + (-2.f/3.f)*static_cast<float>(size))));
 
-	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(-static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(static_cast<float>(size)/3.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + static_cast<float>(size)/3.f)));
 
-	newPoint.x = center.x;
-	newPoint.y = center.y + size;
-
-	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + newPoint.y)));
-
-	for(unsigned int i{0}; i < 6; i++) {
-
-		diff = newPoint - center;
-
-		newPoint.x = center.x + diff.x*cos(60.f*PI/180.f) - diff.y*sin(60.f*PI/180.f);
-		newPoint.y = center.y + diff.x*sin(60.f*PI/180.f) + diff.y*cos(60.f*PI/180.f);
-
-		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!X", std::to_string(newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!Y", std::to_string(newPoint.y)));
-		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!X", std::to_string(textureCenter.x + newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!Y", std::to_string(textureCenter.y + newPoint.y)));
-	}
+	componentArguments.insert(std::make_pair("VerticePosition!2!X", std::to_string(static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!2!Y", std::to_string(static_cast<float>(size)/3.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + static_cast<float>(size)/3.f)));
 
 	return componentArguments;
 }
