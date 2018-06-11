@@ -18,10 +18,13 @@ class GraphicComponent: public sf::Drawable {
 		GraphicComponent &operator=(const GraphicComponent &component);
 
 		virtual void setPosition(const sf::Vector2f newPosition) = 0;
+		virtual void rotate(const float rotation) = 0;
 
 		virtual void update(const unsigned int elapsedNanoTime) = 0;
 
 		virtual std::unique_ptr<GraphicComponent> clone() const = 0;
+
+		virtual void synchronizeTextureRotation();
 
 		bool isNamed(const std::string &possibleName) const;
 

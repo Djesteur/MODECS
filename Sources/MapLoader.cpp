@@ -57,6 +57,7 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 	std::list<Entity> tiles;
 	sf::Vector2f position{0.f, 0.f};
+	float rotation{0};
 
 	//Mettre des trow/catch au cas ou fichier mal formé
 
@@ -65,11 +66,14 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 		tiles.emplace_back(keeper.newEntity());
 		system.addEntity(tiles.back());
 
+		position = sf::Vector2f{0.f, 0.f};
+		rotation = 0.f;
+
 		m_logWriter << "\tA new entity as been created";
 
 		while(currentData != "/!\\") {
 
-			splitedDatas = splitDatas(currentData, '-');
+			splitedDatas = splitDatas(currentData, '!');
 
 			if(splitedDatas[0] == "Clone") {
 
@@ -85,11 +89,14 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 			if(splitedDatas[0] == "PositionX") { std::istringstream(splitedDatas[1]) >> position.x; }
 			if(splitedDatas[0] == "PositionY") { std::istringstream(splitedDatas[1]) >> position.y; }
+			if(splitedDatas[0] == "Rotation") { std::istringstream(splitedDatas[1]) >> rotation; }
 
 			std::getline(mapFile, currentData);
 		}
 
 		system.setPosition(tiles.back(), position);
+		system.rotate(tiles.back(), rotation);
+		system.syncTextureRotation(tiles.back());
 
 		m_logWriter << " with position (" << std::to_string(position.x) << ", " << std::to_string(position.y) << ").\n"; 
 	}
@@ -123,18 +130,18 @@ std::map<std::string, std::string> MapLoader::constructHexa(const std::string te
 
 	sf::Vector2f center{0, 0}, newPoint{center}, diff{0, 0};
 
-	componentArguments.insert(std::make_pair("VerticePosition-0-X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition-0-Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-Y", std::to_string(textureCenter.y + newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + newPoint.y)));
 
 	newPoint.x = center.x;
 	newPoint.y = center.y + size;
 
-	componentArguments.insert(std::make_pair("VerticePosition-1-X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition-1-Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-Y", std::to_string(textureCenter.y + newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + newPoint.y)));
 
 	for(unsigned int i{0}; i < 6; i++) {
 
@@ -143,10 +150,10 @@ std::map<std::string, std::string> MapLoader::constructHexa(const std::string te
 		newPoint.x = center.x + diff.x*cos(60.f*PI/180.f) - diff.y*sin(60.f*PI/180.f);
 		newPoint.y = center.y + diff.x*sin(60.f*PI/180.f) + diff.y*cos(60.f*PI/180.f);
 
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-X", std::to_string(newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-Y", std::to_string(newPoint.y)));
-		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-X", std::to_string(textureCenter.x + newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-Y", std::to_string(textureCenter.y + newPoint.y)));
+		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!X", std::to_string(newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!Y", std::to_string(newPoint.y)));
+		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!X", std::to_string(textureCenter.x + newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!Y", std::to_string(textureCenter.y + newPoint.y)));
 	}
 
 	return componentArguments;
@@ -161,25 +168,25 @@ std::map<std::string, std::string> MapLoader::constructSquare(const std::string 
 	componentArguments.insert(std::make_pair("VertexArrayType", "Quads"));
 	componentArguments.insert(std::make_pair("VertexNumber", "4"));
 
-	componentArguments.insert(std::make_pair("VerticePosition-0-X", std::to_string(-static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition-0-Y", std::to_string(-static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-Y", std::to_string(textureCenter.y - static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(-static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string(-static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y - static_cast<float>(size)/2.f)));
 
-	componentArguments.insert(std::make_pair("VerticePosition-1-X", std::to_string(static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition-1-Y", std::to_string(-static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-Y", std::to_string(textureCenter.y - static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(-static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y - static_cast<float>(size)/2.f)));
 
-	componentArguments.insert(std::make_pair("VerticePosition-2-X", std::to_string(static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition-2-Y", std::to_string(static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-2-X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-2-Y", std::to_string(textureCenter.y + static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!2!X", std::to_string(static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!2!Y", std::to_string(static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + static_cast<float>(size)/2.f)));
 
-	componentArguments.insert(std::make_pair("VerticePosition-3-X", std::to_string(-static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition-3-Y", std::to_string(static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-3-X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture-3-Y", std::to_string(textureCenter.y + static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!3!X", std::to_string(-static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticePosition!3!Y", std::to_string(static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!3!X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
+	componentArguments.insert(std::make_pair("VerticeTexture!3!Y", std::to_string(textureCenter.y + static_cast<float>(size)/2.f)));
 
 	return componentArguments;
 }
@@ -196,18 +203,18 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 
 	sf::Vector2f center{0, 0}, newPoint{center}, diff{0, 0};
 
-	componentArguments.insert(std::make_pair("VerticePosition-0-X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition-0-Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture-0-Y", std::to_string(textureCenter.y + newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + newPoint.y)));
 
 	newPoint.x = center.x;
 	newPoint.y = center.y + size;
 
-	componentArguments.insert(std::make_pair("VerticePosition-1-X", std::to_string(newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticePosition-1-Y", std::to_string(newPoint.y)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-X", std::to_string(textureCenter.x + newPoint.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture-1-Y", std::to_string(textureCenter.y + newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(newPoint.y)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x + newPoint.x)));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + newPoint.y)));
 
 	for(unsigned int i{0}; i < 6; i++) {
 
@@ -216,10 +223,10 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 		newPoint.x = center.x + diff.x*cos(60.f*PI/180.f) - diff.y*sin(60.f*PI/180.f);
 		newPoint.y = center.y + diff.x*sin(60.f*PI/180.f) + diff.y*cos(60.f*PI/180.f);
 
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-X", std::to_string(newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticePosition-" + std::to_string(i+2) + "-Y", std::to_string(newPoint.y)));
-		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-X", std::to_string(textureCenter.x + newPoint.x)));
-		componentArguments.insert(std::make_pair("VerticeTexture-" + std::to_string(i+2) + "-Y", std::to_string(textureCenter.y + newPoint.y)));
+		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!X", std::to_string(newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticePosition!" + std::to_string(i+2) + "!Y", std::to_string(newPoint.y)));
+		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!X", std::to_string(textureCenter.x + newPoint.x)));
+		componentArguments.insert(std::make_pair("VerticeTexture!" + std::to_string(i+2) + "!Y", std::to_string(textureCenter.y + newPoint.y)));
 	}
 
 	return componentArguments;

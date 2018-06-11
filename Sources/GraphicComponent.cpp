@@ -21,3 +21,5 @@ GraphicComponent &GraphicComponent::operator=(const GraphicComponent &component)
 }
 
 bool GraphicComponent::isNamed(const std::string &possibleName) const { return (m_name == possibleName); }
+
+void GraphicComponent::synchronizeTextureRotation() {}

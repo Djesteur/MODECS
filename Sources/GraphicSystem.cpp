@@ -114,3 +114,37 @@ void GraphicSystem::setPosition(const Entity &entity, const sf::Vector2f newPosi
 		}
 	}
 }
+
+void GraphicSystem::rotate(const Entity &entity, const float rotation) {
+
+	if(isInSystem(entity)) {
+
+		for(EntityAndComponent &currentEntity: m_datas) {
+
+			if(currentEntity.first == entity) {
+
+				for(std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
+
+					currentComponent->rotate(rotation);
+				}
+			}
+		}
+	}
+}
+
+void GraphicSystem::syncTextureRotation(const Entity &entity) {
+
+	if(isInSystem(entity)) {
+
+		for(EntityAndComponent &currentEntity: m_datas) {
+
+			if(currentEntity.first == entity) {
+
+				for(std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
+
+					currentComponent->synchronizeTextureRotation();
+				}
+			}
+		}
+	}
+}

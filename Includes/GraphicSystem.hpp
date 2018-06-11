@@ -37,6 +37,8 @@ class GraphicSystem {
 		void copyAllComponents(const Entity &from, const Entity &to);
 
 		void setPosition(const Entity &entity, const sf::Vector2f newPosition);
+		void rotate(const Entity &entity, const float rotation);
+		void syncTextureRotation(const Entity &entity);
 
 	private:
 

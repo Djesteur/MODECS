@@ -24,6 +24,7 @@ SpriteComponent &SpriteComponent::operator=(const SpriteComponent &component) {
 std::unique_ptr<GraphicComponent> SpriteComponent::clone() const { return std::make_unique<SpriteComponent>(*this); }
 
 void SpriteComponent::setPosition(const sf::Vector2f newPosition) { m_sprite.setPosition(newPosition); }
+void SpriteComponent::rotate(const float rotation) { m_sprite.rotate(rotation); }
 
 void SpriteComponent::update(const unsigned int elapsedNanoTime) {}
 

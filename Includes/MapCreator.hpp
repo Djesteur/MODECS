@@ -23,6 +23,8 @@ class MapCreator {
 		void create(const sf::Vector2u mapSize, const unsigned int tileSize);
 
 	private:
+
+		float getNorme(const sf::Vector2f u, const sf::Vector2f v) const;
 		
 		LogWriter m_logWriter;
 };

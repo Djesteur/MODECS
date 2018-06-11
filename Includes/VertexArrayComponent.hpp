@@ -3,6 +3,8 @@
 
 #include "GraphicComponent.hpp"
 
+#define PI 3.14159264
+
 class VertexArrayComponent: public GraphicComponent {
 
 	public:
@@ -16,6 +18,9 @@ class VertexArrayComponent: public GraphicComponent {
 		std::unique_ptr<GraphicComponent> clone() const;
 
 		virtual void setPosition(const sf::Vector2f newPosition);
+		virtual void rotate(const float rotation);
+
+		virtual void synchronizeTextureRotation();
 
 		virtual void update(const unsigned int elapsedNanoTime);
 
@@ -27,6 +32,7 @@ class VertexArrayComponent: public GraphicComponent {
 		const bool m_usingTexture;
 
 		std::vector<sf::Vector2f> m_originalPosition; //Needed for setPosition function
+		float m_currentRotation;
 };
 
 #endif

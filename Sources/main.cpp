@@ -18,7 +18,7 @@ int main() {
 	const unsigned int tileSize{128};
 
 	MapCreator creator;
-	creator.create(sf::Vector2u{3, 3}, tileSize);
+	creator.create(sf::Vector2u{3, 4}, tileSize);
 
 	MapLoader loader;
 	loader.load(keeper, system, tileSize);

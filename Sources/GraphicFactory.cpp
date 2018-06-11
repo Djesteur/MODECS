@@ -62,16 +62,16 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 		for(unsigned int i{0}; i < nbVertices; i++) {
 
-			if(factoryParam.find("VerticePosition-" + std::to_string(i) + "-X") != factoryParam.end() 
-			&& factoryParam.find("VerticePosition-" + std::to_string(i) + "-Y") != factoryParam.end()) {
+			if(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X") != factoryParam.end() 
+			&& factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y") != factoryParam.end()) {
 
-				array[i].position = sf::Vector2f{std::stof(factoryParam.find("VerticePosition-" + std::to_string(i) + "-X")->second),
-												 std::stof(factoryParam.find("VerticePosition-" + std::to_string(i) + "-Y")->second)};
+				array[i].position = sf::Vector2f{std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X")->second),
+												 std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y")->second)};
 			}
 
-			if(factoryParam.find("VerticeColor-" + std::to_string(i)) != factoryParam.end()) {
+			if(factoryParam.find("VerticeColor!" + std::to_string(i)) != factoryParam.end()) {
 
-				array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor-" + std::to_string(i))->second))};
+				array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor!" + std::to_string(i))->second))};
 			}
 		}
 
@@ -79,11 +79,11 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 			for(unsigned int i{0}; i < nbVertices; i++) {
 
-				if(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-X") != factoryParam.end() &&
-				   factoryParam.find("VerticeTexture-" + std::to_string(i) + "-Y") != factoryParam.end()) {
+				if(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X") != factoryParam.end() &&
+				   factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y") != factoryParam.end()) {
 
-					array[i].texCoords = sf::Vector2f{std::stof(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-X")->second),
-												      std::stof(factoryParam.find("VerticeTexture-" + std::to_string(i) + "-Y")->second)};
+					array[i].texCoords = sf::Vector2f{std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X")->second),
+												      std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y")->second)};
 				}
 			}
 
@@ -96,9 +96,9 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 			for(unsigned int i{0}; i < nbVertices; i++) {
 
-				if(factoryParam.find("VerticeColor-" + std::to_string(i)) != factoryParam.end()) {
+				if(factoryParam.find("VerticeColor!" + std::to_string(i)) != factoryParam.end()) {
 
-					array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor-" + std::to_string(i))->second))};
+					array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor!" + std::to_string(i))->second))};
 				}
 			}
 

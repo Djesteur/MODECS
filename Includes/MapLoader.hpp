@@ -9,8 +9,6 @@
 #include "LogWriter.hpp"
 #include "GraphicSystem.hpp"
 
-#define PI 3.14159265
-
 class MapLoader {
 
 	public:

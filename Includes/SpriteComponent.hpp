@@ -15,6 +15,7 @@ class SpriteComponent: public GraphicComponent {
 		virtual std::unique_ptr<GraphicComponent> clone() const;
 
 		virtual void setPosition(const sf::Vector2f newPosition);
+		virtual void rotate(const float rotation);
 
 		virtual void update(const unsigned int elapsedNanoTime);
 
