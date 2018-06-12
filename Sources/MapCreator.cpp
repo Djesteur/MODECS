@@ -11,12 +11,14 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 	if(mapFile) {
 
+		std::vector<sf::Vector2f> hexaPositions;
+
 		//Hexa
 
 	    std::default_random_engine engine{static_cast<long unsigned int>(std::time(nullptr))};
 	    std::uniform_int_distribution<unsigned int> random(1, 3); 
 
-		for(unsigned int i{0}; i < mapSize.x*mapSize.y; i++) {
+		/*for(unsigned int i{0}; i < mapSize.x*mapSize.y; i++) {
 
 			mapFile << "Clone!";
 
@@ -40,13 +42,13 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 			sf::Vector2f pos{(i%mapSize.x)*tileSpace + ((i/mapSize.x)%2)*spacement.x,
 							 (i/mapSize.x)*spacement.y};
 
-							 std::cout << pos.x << " " << pos.y << std::endl;
-
 			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
 			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
 			mapFile << "Rotation!0" << std::endl;
 
 			mapFile << "/!\\" << std::endl;
+
+			hexaPositions.emplace_back(pos);
 		}
 
 		//Square
@@ -77,10 +79,10 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 			mapFile << std::endl;
 
-			currentHexa = i + i/2; 
+			currentHexa = i + i/(mapSize.x-1); 
 
-			pos.x = (currentHexa%mapSize.x)*tileSpace + ((currentHexa/mapSize.x)%2)*spacement.x + tileSpace/2.f;
-			pos.y = (currentHexa/mapSize.x)*spacement.y;
+			pos.x = hexaPositions[currentHexa].x + tileSpace/2.f;
+			pos.y = hexaPositions[currentHexa].y;
 
 			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
 			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
@@ -115,8 +117,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 			currentHexa = i + i/(2*mapSize.x-1);
 						
-			pos.x = (currentHexa%mapSize.x)*tileSpace + ((currentHexa/mapSize.x)%2)*spacement.x + (tileSpace/2.f)*cosf(PI/3.f);
-			pos.y = (currentHexa/mapSize.x)*spacement.y + (tileSpace/2.f)*sinf(PI/3.f);
+			pos.x = hexaPositions[currentHexa].x + (tileSpace/2.f)*cosf(PI/3.f);
+			pos.y = hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f);
 
 			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
 			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
@@ -151,26 +153,21 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 			currentHexa = i + 1 + i/(2*mapSize.x-1);
 
-			pos.x = (currentHexa%mapSize.x)*tileSpace + ((currentHexa/mapSize.x)%2)*spacement.x - (tileSpace/2.f)*cosf(PI/3.f);
-			pos.y = (currentHexa/mapSize.x)*spacement.y + (tileSpace/2.f)*sinf(PI/3.f);
+			pos.x = hexaPositions[currentHexa].x - (tileSpace/2.f)*cosf(PI/3.f);
+			pos.y = hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f);
 
 			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
 			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
 			mapFile << "Rotation!-60" << std::endl;
 
 			mapFile << "/!\\" << std::endl;
-		}
+		}*/
 
 		//Triangles
 
-		std::deque<sf::Vector2f> usedHexagon;
-		usedHexagon.emplace_back(0.f, 0.f);
-		usedHexagon.emplace_back(spacement.x, spacement.y);
-		usedHexagon.emplace_back(tileSpace, 0);
+		//(mapSize.x-1)*(mapSize.y-1)
 
-		sf::Vector2f triangleCenter{0.f, 0.f};
-
-		for(unsigned int i{0}; i < (mapSize.x+1)*(mapSize.y-1); i++) {
+		for(unsigned int i{0}; i < 1; i++) {
 
 			mapFile << "Clone!";
 
@@ -191,27 +188,58 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 			mapFile << std::endl;
 
-			triangleCenter = sf::Vector2f{0.f, 0.f};
+			sf::Vector2f pos;
 
-			for(sf::Vector2f currentPos: usedHexagon) { triangleCenter += currentPos; std::cout << currentPos.x << " " << currentPos.y << std::endl; }
-			triangleCenter /= static_cast<float>(usedHexagon.size());
+			//currentHexa = i + i/(mapSize.x-1);
 
-			mapFile << "PositionX!" << std::to_string(triangleCenter.x) << std::endl;
-			mapFile << "PositionY!" << std::to_string(triangleCenter.y) << std::endl;
+			//pos.x = hexaPositions[currentHexa].x + tileSpace/2.f;
+			//pos.y = hexaPositions[currentHexa].y + tileSize*(3.f + sqrtf(3.0))/6.f;
+
+			pos.x = tileSize/2;
+			pos.y = tileSize*sqrt(3)/3;
+
+
+
+			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
+			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
+			mapFile << "Rotation!180" << std::endl;
 
 			mapFile << "/!\\" << std::endl;
-
-			//Pivot
-
-			usedHexagon.pop_front();
-
-			if(i == mapSize.x-1) { //Changement de ligne
+		}
 
 
+		/*for(unsigned int i{0}; i < 0; i++) {
+
+			mapFile << "Clone!";
+
+			switch(random(engine)) {
+
+				case 1:
+					mapFile << "TriangleMountains";
+					break;
+
+				case 2:
+					mapFile << "TriangleOcean";
+					break;
+
+				case 3:
+					mapFile << "TrianglePlains";
+					break;
 			}
 
-			else {}
-		}
+			mapFile << std::endl;
+
+			currentHexa = i + mapSize.x + i/(mapSize.x-1);
+
+			pos.x = hexaPositions[currentHexa].x + tileSpace/2.f;
+			pos.y = hexaPositions[currentHexa].y - tileSize*(3.f + sqrtf(3.0))/6.f;
+
+			mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
+			mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
+			mapFile << "Rotation!0" << std::endl;
+
+			mapFile << "/!\\" << std::endl;
+		}*/
 
 		mapFile.close();
 	}

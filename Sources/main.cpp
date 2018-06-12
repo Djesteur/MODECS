@@ -34,7 +34,7 @@ int main() {
 
 		system.update(0);
 
-		window.clear(sf::Color::Black);
+		window.clear(sf::Color::Magenta);
 		system.drawComponents(window);
 		window.display();
 	}

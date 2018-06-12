@@ -33,6 +33,7 @@ class VertexArrayComponent: public GraphicComponent {
 
 		std::vector<sf::Vector2f> m_originalPosition; //Needed for setPosition function
 		float m_currentRotation;
+		sf::Vector2f m_currentCenter;
 };
 
 #endif

@@ -14,9 +14,6 @@ std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std:
 
 	if(newComponent != nullptr) { //Sinon, type invalide ou paramètre manquant
 
-		//Rajouter des attributs commun à tous les composants graphiques (position, ...)
-		//currentEntity.second.back()->m_sprite.setPosition(sf::Vector2f{std::stof(factoryParam["PosX"]), std::stof(factoryParam["PosY"])});
-
 		if(factoryParam.find("PosX") != factoryParam.end() && factoryParam.find("PosY") != factoryParam.end()) {
 
 			newComponent->setPosition(sf::Vector2f{std::stof(factoryParam.find("PosX")->second), std::stof(factoryParam.find("PosY")->second)});
@@ -51,6 +48,7 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 		if(factoryParam.find("VertexArrayType")->second == "LineStrip") { array.setPrimitiveType(sf::LineStrip); }
 		if(factoryParam.find("VertexArrayType")->second == "TriangleFan") { array.setPrimitiveType(sf::TriangleFan); }
+		if(factoryParam.find("VertexArrayType")->second == "Triangles") { array.setPrimitiveType(sf::Triangles); }
 		if(factoryParam.find("VertexArrayType")->second == "Quads") { array.setPrimitiveType(sf::Quads); }
 		//Mettre les autres types
 

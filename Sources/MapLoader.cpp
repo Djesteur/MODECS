@@ -8,8 +8,6 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 	std::ifstream mapFile{"Data/Map"};
 
-	Entity mountain{keeper.newEntity()}, ocean{keeper.newEntity()}, plains{keeper.newEntity()};
-
 	m_logWriter << "Loading temporary entities.\n";
 
 	std::string currentData;
@@ -95,6 +93,7 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 		}
 
 		system.setPosition(tiles.back(), position);
+
 		system.rotate(tiles.back(), rotation);
 		system.syncTextureRotation(tiles.back());
 
@@ -106,13 +105,11 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 	mapFile.close();
 
-	system.deleteEntity(mountain);
-	system.deleteEntity(ocean);
-	system.deleteEntity(plains);
+	for(std::pair<std::string, Entity> currentTile: correspondingTileEntity) {
 
-	keeper.deleteEntity(mountain);
-	keeper.deleteEntity(ocean);
-	keeper.deleteEntity(plains);
+		system.deleteEntity(currentTile.second);
+		keeper.deleteEntity(currentTile.second);
+	}
 
 	m_logWriter << "End of the construction.\n";
 
@@ -198,23 +195,35 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 	componentArguments.insert(std::make_pair("Type", "VertexArray"));
 	componentArguments.insert(std::make_pair("Name", "GraphicTile"));
 	componentArguments.insert(std::make_pair("TextureName", textureName));
-	componentArguments.insert(std::make_pair("VertexArrayType", "TriangleFan"));
+	componentArguments.insert(std::make_pair("VertexArrayType", "Triangles"));
 	componentArguments.insert(std::make_pair("VertexNumber", "3"));
 
-	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(0)));
-	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string((-2.f/3.f)*static_cast<float>(static_cast<float>(size)))));
-	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x)));
-	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + (-2.f/3.f)*static_cast<float>(size))));
+	//Pointe vers le haut
 
-	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(-static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(static_cast<float>(size)/3.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x - static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + static_cast<float>(size)/3.f)));
+	sf::Vector2f pos;	
+	pos.y = 1.f/3.f;
+	pos.x = sqrtf(3.f)/2.f - pos.y;
 
-	componentArguments.insert(std::make_pair("VerticePosition!2!X", std::to_string(static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticePosition!2!Y", std::to_string(static_cast<float>(size)/3.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture!2!X", std::to_string(textureCenter.x + static_cast<float>(size)/2.f)));
-	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + static_cast<float>(size)/3.f)));
+	sf::Vector2f A{0, -pos.x} , B{0.5f, pos.y}, C{-0.5f, pos.y};
+
+	std::cout << "A: " << A.x*size << " - " << A.y*size << std::endl;
+	std::cout << "B: " << B.x*size << " - " << B.y*size << std::endl;
+	std::cout << "C: " << C.x*size << " - " << C.y*size << std::endl;
+
+	componentArguments.insert(std::make_pair("VerticePosition!0!X", std::to_string(A.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticePosition!0!Y", std::to_string(A.y*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!X", std::to_string(textureCenter.x + A.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!0!Y", std::to_string(textureCenter.y + A.y*static_cast<float>(size))));
+
+	componentArguments.insert(std::make_pair("VerticePosition!1!X", std::to_string(B.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticePosition!1!Y", std::to_string(B.y*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!X", std::to_string(textureCenter.x + B.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!1!Y", std::to_string(textureCenter.y + B.y*static_cast<float>(size))));
+
+	componentArguments.insert(std::make_pair("VerticePosition!2!X", std::to_string(C.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticePosition!2!Y", std::to_string(C.y*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!X", std::to_string(textureCenter.x + C.x*static_cast<float>(size))));
+	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + C.y*static_cast<float>(size))));
 
 	return componentArguments;
 }
