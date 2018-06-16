@@ -1,3 +1,8 @@
+/*
+	MODECS - A video game by Guillaume "Djesteur" Fabre
+	This software is under CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/ for more informations)
+*/
+
 #include <SFML/Graphics.hpp>
 
 #include "Graphic/GraphicSystem.hpp"
@@ -61,4 +66,4 @@ int main() {
 	- Optimiser création de tiles
 	- Vérifier fichier lors du chargement
 	- Log du system
-	*/
+*/
