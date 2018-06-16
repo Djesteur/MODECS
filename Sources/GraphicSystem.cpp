@@ -148,3 +148,14 @@ void GraphicSystem::syncTextureRotation(const Entity &entity) {
 		}
 	}
 }
+
+void GraphicSystem::haveToDrawBorders(const bool drawBorders) {
+
+	for(const EntityAndComponent &currentEntity: m_datas) {
+
+		for(const std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
+
+			currentComponent->haveToDrawBorders(drawBorders);
+		}
+	}
+}

@@ -14,6 +14,18 @@ VertexArrayComponent::VertexArrayComponent(const std::string &name, std::shared_
 	m_currentCenter{0.f, 0.f} {
 
 		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_originalPosition.emplace_back(array[i].position); }
+
+		m_borders.resize(m_array.getVertexCount() + 1);
+		std::cout << m_borders.getVertexCount() << std::endl;
+
+		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { 
+
+			m_borders[i].position = m_array[i].position;
+			m_borders[i].color = sf::Color::Black;
+		}
+
+		m_borders[m_borders.getVertexCount()-1].position = m_array[0].position;
+		m_borders[0].color = sf::Color::Black;
 	}
 
 VertexArrayComponent::VertexArrayComponent(const std::string &name, sf::VertexArray array):
@@ -24,6 +36,18 @@ VertexArrayComponent::VertexArrayComponent(const std::string &name, sf::VertexAr
 	m_currentCenter{0.f, 0.f} {
 
 		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_originalPosition.emplace_back(array[i].position); }
+
+		m_borders.resize(m_array.getVertexCount() + 1);
+		std::cout << m_borders.getVertexCount() << std::endl;
+
+		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { 
+
+			m_borders[i].position = m_array[i].position;
+			m_borders[i].color = sf::Color::Black;
+		}
+
+		m_borders[m_borders.getVertexCount()-1].position = m_array[0].position;
+		m_borders[0].color = sf::Color::Black;
 	}
 
 VertexArrayComponent::VertexArrayComponent(const VertexArrayComponent &component): 
@@ -50,8 +74,8 @@ void VertexArrayComponent::setPosition(const sf::Vector2f newPosition) {
 
 	sf::Vector2f diff{newPosition - m_currentCenter}; 
 
-	for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_array[i].position += diff; std::cout << "NEW: " << m_array[i].position.x << " - " << m_array[i].position.y << std::endl;	 }
-
+	for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_array[i].position += diff; }
+		
 	m_currentCenter = newPosition;
 }
 
@@ -98,4 +122,6 @@ void VertexArrayComponent::draw(sf::RenderTarget &target, sf::RenderStates state
 	if(m_usingTexture) { states.texture = m_texture.get(); }
 
 	target.draw(m_array, states);
+
+	if(m_drawBorders) { target.draw(m_borders); std::cout << "LOL" << std::endl;}
 }

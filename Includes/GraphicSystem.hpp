@@ -40,6 +40,8 @@ class GraphicSystem {
 		void rotate(const Entity &entity, const float rotation);
 		void syncTextureRotation(const Entity &entity);
 
+		void haveToDrawBorders(const bool drawBorders);
+
 	private:
 
 		std::list<EntityAndComponent> m_datas;
