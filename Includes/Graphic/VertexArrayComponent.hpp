@@ -3,7 +3,7 @@
 
 #include "GraphicComponent.hpp"
 
-#define PI 3.14159264
+#include "Utils/MathUtils.hpp"
 
 class VertexArrayComponent: public GraphicComponent {
 
@@ -21,8 +21,6 @@ class VertexArrayComponent: public GraphicComponent {
 		virtual void rotate(const float rotation);
 
 		virtual void synchronizeTextureRotation();
-
-		virtual void update(const unsigned int elapsedNanoTime);
 
 	private:
 

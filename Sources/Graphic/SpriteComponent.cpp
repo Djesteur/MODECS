@@ -1,4 +1,4 @@
-#include "SpriteComponent.hpp"
+#include "Graphic/SpriteComponent.hpp"
 
 SpriteComponent::SpriteComponent(): GraphicComponent() {}
 
@@ -25,7 +25,5 @@ std::unique_ptr<GraphicComponent> SpriteComponent::clone() const { return std::m
 
 void SpriteComponent::setPosition(const sf::Vector2f newPosition) { m_sprite.setPosition(newPosition); }
 void SpriteComponent::rotate(const float rotation) { m_sprite.rotate(rotation); }
-
-void SpriteComponent::update(const unsigned int elapsedNanoTime) {}
 
 void SpriteComponent::draw(sf::RenderTarget &target, sf::RenderStates states) const { target.draw(m_sprite, states); }

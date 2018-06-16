@@ -4,7 +4,8 @@
 #include <list>
 #include <fstream>
 
-#include "Entity.hpp"
+#include "Entity/Entity.hpp"
+
 #include "LogWriter.hpp"
 
 class EntityKeeper {

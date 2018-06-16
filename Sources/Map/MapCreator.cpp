@@ -1,4 +1,4 @@
-#include "MapCreator.hpp"
+#include "Map/MapCreator.hpp"
 
 MapCreator::MapCreator(): m_logWriter{"Data/MapCreator"} {}
 
@@ -25,8 +25,13 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 	    	- 2*(2*X-1)*(Y/2)
 	    	- 2*(X-1)(Y-1)
 
-	    	== 8XY-(3/2)Y - 4(X + y + 1)
+	    	= 8XY-(3/2)Y - 4(X + y + 1)
 
+	    	si X == Y
+
+	    	= 8n² - (3/2)n - 4(2n +1)
+	    	= 8n² - (3/2)n - 8n + 4
+	    	= 8n² - (19/2)n  + 4
 	    	*/
 
 
@@ -234,4 +239,3 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 	}
 }
 
-float MapCreator::getNorme(const sf::Vector2f u, const sf::Vector2f v) const { return sqrtf((v.x - u.x)*(v.x - u.x) + (v.y - u.y)*(v.y - u.y)); }

@@ -1,4 +1,4 @@
-#include "MapLoader.hpp"
+#include "Map/MapLoader.hpp"
 
 MapLoader::MapLoader(): m_logWriter{"Output/Map/Loader"} {}
 

@@ -1,7 +1,7 @@
 #ifndef SPRITECOMPONENT_HPP
 #define SPRITECOMPONENT_HPP
 
-#include "GraphicComponent.hpp"
+#include "Graphic/GraphicComponent.hpp"
 
 class SpriteComponent: public GraphicComponent {
 
@@ -16,8 +16,6 @@ class SpriteComponent: public GraphicComponent {
 
 		virtual void setPosition(const sf::Vector2f newPosition);
 		virtual void rotate(const float rotation);
-
-		virtual void update(const unsigned int elapsedNanoTime);
 
 	private:
 

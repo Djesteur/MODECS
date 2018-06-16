@@ -7,8 +7,10 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "Entity.hpp"
-#include "GraphicFactory.hpp"
+#include "Entity/Entity.hpp"
+
+#include "Graphic/GraphicFactory.hpp"
+
 #include "LogWriter.hpp"
 
 using EntityAndComponent = std::pair<Entity, std::list<std::unique_ptr<GraphicComponent>>>;
@@ -39,8 +41,6 @@ class GraphicSystem {
 		void setPosition(const Entity &entity, const sf::Vector2f newPosition);
 		void rotate(const Entity &entity, const float rotation);
 		void syncTextureRotation(const Entity &entity);
-
-		void haveToDrawBorders(const bool drawBorders);
 
 	private:
 

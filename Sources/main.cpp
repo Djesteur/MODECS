@@ -1,16 +1,13 @@
-#include <iostream>
-
 #include <SFML/Graphics.hpp>
 
-#include "GraphicSystem.hpp"
-#include "EntityKeeper.hpp"
-#include "MapLoader.hpp"
-#include "MapCreator.hpp"
+#include "Graphic/GraphicSystem.hpp"
+
+#include "Entity/EntityKeeper.hpp"
+
+#include "Map/MapLoader.hpp"
+#include "Map/MapCreator.hpp"
 
 int main() {
-
-	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS"};
-	window.setVerticalSyncEnabled(true);
 
 	GraphicSystem system;
 	EntityKeeper keeper;
@@ -23,6 +20,9 @@ int main() {
 
 	MapLoader loader;
 	loader.load(keeper, system, tileSize);
+
+	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS"};
+	window.setVerticalSyncEnabled(true);
 	
 	sf::Event event;
 	sf::View currentView{sf::Vector2f{640, 360}, sf::Vector2f{1280, 720}};
@@ -39,9 +39,6 @@ int main() {
 				if(event.key.code == sf::Keyboard::S) { currentView.move(0.f, tileSpace); }
 				if(event.key.code == sf::Keyboard::Q) { currentView.move(-tileSpace, 0.f); }
 				if(event.key.code == sf::Keyboard::D) { currentView.move(tileSpace, 0.f); }
-
-				if(event.key.code == sf::Keyboard::T) { system.haveToDrawBorders(true); }
-				if(event.key.code == sf::Keyboard::Y) { system.haveToDrawBorders(false); }
 			}
 		}
 
@@ -61,7 +58,7 @@ int main() {
 
 /* Encore a faire:
 
-	- Optimiser création de tiles et chargement
-	- Créer un fichier "utils" ?
-	
-	- Log du system*/
+	- Optimiser création de tiles
+	- Vérifier fichier lors du chargement
+	- Log du system
+	*/

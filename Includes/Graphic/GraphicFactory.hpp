@@ -2,12 +2,13 @@
 #define GRAPHICFACTORY_HPP
 
 #include <string>
-#include <iomanip>
-#include <string>
+#include <map>
 
-#include "TextureKeeper.hpp"
-#include "SpriteComponent.hpp"
-#include "VertexArrayComponent.hpp"
+#include "Graphic/TextureKeeper.hpp"
+#include "Graphic/SpriteComponent.hpp"
+#include "Graphic/VertexArrayComponent.hpp"
+
+#include "Utils/StringUtils.hpp"
 
 #include "LogWriter.hpp"
 
@@ -35,10 +36,9 @@ class GraphicFactory {
 
 		/* A rajouter:
 
-			- Ajouter animation (composant animation à faire)*/
+			- Animation (composant animation à faire)*/
 };
 
-std::vector<std::string> splitDatas(const std::string &datas, const char spliter);
-unsigned int convertStringHexToUnsigned(const std::string &hexaString);
+
 
 #endif

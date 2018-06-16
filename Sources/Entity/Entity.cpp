@@ -1,4 +1,4 @@
-#include "Entity.hpp"
+#include "Entity/Entity.hpp"
 
 Entity::Entity(): 
 	m_ID{0},

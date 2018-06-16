@@ -5,12 +5,15 @@ LDFLAGS  = -L /usr/local/lib -lsfml-system -lsfml-window -lsfml-graphics
 SRCFILE = Sources
 INCFILE = Includes
 OBJFILE = Obj
-OUTFILE = Output
 EXEFILE = .
 
+OUTPUTFILES = Output Output/Graphics Output/Map Output/Entity
+
+DIRECTORIES = $(subst $(SRCFILE),$(OBJFILE),$(shell find $(SRCFILE) -type d))
+
 EXENAME = test
-SRC     = $(wildcard $(SRCFILE)/*.cpp)
-INC     = $(wildcard $(INCFILE)/*.hpp)
+SRC     = $(wildcard $(SRCFILE)/*.cpp) $(wildcard $(SRCFILE)/**/*.cpp)
+INC     = $(wildcard $(SRCFILE)/*.hpp) $(wildcard $(SRCFILE)/**/*.hpp)
 OBJ     = $(SRC:$(SRCFILE)/%.cpp=$(OBJFILE)/%.o)
 
 ENDCOLOR    = \033[m
@@ -38,7 +41,7 @@ ERRSTRING  = $(LREDCOLOR)[ERROR]$(ENDCOLOR)
 all: $(EXENAME)
 
 $(EXENAME): $(OBJ)
-	@mkdir -p $(OUTFILE)
+	@mkdir -p $(OUTPUTFILES)
 	@mkdir -p $(EXEFILE)
 	@echo "$(LGREENCOLOR)-------------------------------------------------------------------$(ENDCOLOR)"
 	@echo "$(LGREENCOLOR)| Linking:    $(ENDCOLOR)$(LYELLOWCOLOR)$^$(ENDCOLOR)"
@@ -47,7 +50,7 @@ $(EXENAME): $(OBJ)
 	@echo "$(LGREENCOLOR)| Executable: $(ENDCOLOR)$(LPURPLECOLOR)$(EXEFILE)/$(EXENAME)$(ENDCOLOR)"
 
 $(OBJFILE)/%.o: $(SRCFILE)/%.cpp
-	@mkdir -p $(OBJFILE)
+	@mkdir -p $(DIRECTORIES)
 	@printf "%-75b %s" "$(LGREENCOLOR)| Compiling:  $(ENDCOLOR)$(LCYANCOLOR)$<$(ENDCOLOR)"
 	@-$(CXX) $(CXXFLAGS) -c $< -o $@ -I $(INCFILE)
 	@$(eval COMPILRESULT := $(shell echo $$?))

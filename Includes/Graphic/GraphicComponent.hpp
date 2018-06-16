@@ -20,14 +20,13 @@ class GraphicComponent: public sf::Drawable {
 		virtual void setPosition(const sf::Vector2f newPosition) = 0;
 		virtual void rotate(const float rotation) = 0;
 
-		virtual void update(const unsigned int elapsedNanoTime) = 0;
+		virtual void update(const unsigned int elapsedNanoTime);
 
 		virtual std::unique_ptr<GraphicComponent> clone() const = 0;
 
 		virtual void synchronizeTextureRotation();
 
 		bool isNamed(const std::string &possibleName) const;
-		void haveToDrawBorders(const bool borders);
 
 	protected:
 
@@ -36,9 +35,6 @@ class GraphicComponent: public sf::Drawable {
 		const std::string m_name;
 
 		std::shared_ptr<sf::Texture> m_texture;
-
-		bool m_drawBorders;
-		sf::VertexArray m_borders;
 };
 
 #endif

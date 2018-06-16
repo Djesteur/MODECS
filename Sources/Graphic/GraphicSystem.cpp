@@ -1,4 +1,4 @@
-#include "GraphicSystem.hpp"
+#include "Graphic/GraphicSystem.hpp"
 
 GraphicSystem::GraphicSystem(): m_logWriter{"Output/Graphics/System"} {}
 
@@ -145,17 +145,6 @@ void GraphicSystem::syncTextureRotation(const Entity &entity) {
 					currentComponent->synchronizeTextureRotation();
 				}
 			}
-		}
-	}
-}
-
-void GraphicSystem::haveToDrawBorders(const bool drawBorders) {
-
-	for(const EntityAndComponent &currentEntity: m_datas) {
-
-		for(const std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
-
-			currentComponent->haveToDrawBorders(drawBorders);
 		}
 	}
 }

@@ -5,13 +5,16 @@
 #include <vector>
 #include <string>
 #include <deque>
+#include <random>
+#include <chrono>
 
-#include <SFML/Graphics.hpp>
+#include <SFML/System/Vector2.hpp>
 
-#include "EntityKeeper.hpp"
+#include "Entity/EntityKeeper.hpp"
+
+#include "Utils/MathUtils.hpp"
+
 #include "LogWriter.hpp"
-
-#define PI 3.14159265
 
 class MapCreator {
 
@@ -24,8 +27,6 @@ class MapCreator {
 		void create(const sf::Vector2u mapSize, const unsigned int tileSize);
 
 	private:
-
-		float getNorme(const sf::Vector2f u, const sf::Vector2f v) const;
 		
 		LogWriter m_logWriter;
 };

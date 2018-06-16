@@ -1,4 +1,4 @@
-#include "VertexArrayComponent.hpp"
+#include "Graphic/VertexArrayComponent.hpp"
 
 VertexArrayComponent::VertexArrayComponent(): 
 	GraphicComponent(),
@@ -14,18 +14,6 @@ VertexArrayComponent::VertexArrayComponent(const std::string &name, std::shared_
 	m_currentCenter{0.f, 0.f} {
 
 		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_originalPosition.emplace_back(array[i].position); }
-
-		m_borders.resize(m_array.getVertexCount() + 1);
-		std::cout << m_borders.getVertexCount() << std::endl;
-
-		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { 
-
-			m_borders[i].position = m_array[i].position;
-			m_borders[i].color = sf::Color::Black;
-		}
-
-		m_borders[m_borders.getVertexCount()-1].position = m_array[0].position;
-		m_borders[0].color = sf::Color::Black;
 	}
 
 VertexArrayComponent::VertexArrayComponent(const std::string &name, sf::VertexArray array):
@@ -36,18 +24,6 @@ VertexArrayComponent::VertexArrayComponent(const std::string &name, sf::VertexAr
 	m_currentCenter{0.f, 0.f} {
 
 		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { m_originalPosition.emplace_back(array[i].position); }
-
-		m_borders.resize(m_array.getVertexCount() + 1);
-		std::cout << m_borders.getVertexCount() << std::endl;
-
-		for(unsigned int i{0}; i < m_array.getVertexCount(); i++) { 
-
-			m_borders[i].position = m_array[i].position;
-			m_borders[i].color = sf::Color::Black;
-		}
-
-		m_borders[m_borders.getVertexCount()-1].position = m_array[0].position;
-		m_borders[0].color = sf::Color::Black;
 	}
 
 VertexArrayComponent::VertexArrayComponent(const VertexArrayComponent &component): 
@@ -115,13 +91,9 @@ void VertexArrayComponent::synchronizeTextureRotation() {
 	}
 }
 
-void VertexArrayComponent::update(const unsigned int elapsedNanoTime) {}
-
 void VertexArrayComponent::draw(sf::RenderTarget &target, sf::RenderStates states) const { 
 
 	if(m_usingTexture) { states.texture = m_texture.get(); }
 
 	target.draw(m_array, states);
-
-	if(m_drawBorders) { target.draw(m_borders); std::cout << "LOL" << std::endl;}
 }

@@ -5,9 +5,13 @@
 #include <vector>
 #include <string>
 
-#include "EntityKeeper.hpp"
+#include "Entity/EntityKeeper.hpp"
+
+#include "Graphic/GraphicSystem.hpp"
+
+#include "Utils/StringUtils.hpp"
+
 #include "LogWriter.hpp"
-#include "GraphicSystem.hpp"
 
 class MapLoader {
 
@@ -27,9 +31,6 @@ class MapLoader {
 		
 		LogWriter m_logWriter;
 };
-
-std::vector<std::string> splitDatas(const std::string &datas, const char spliter);
-
 
 //Rajouter gestion des erreurs dans le chargement
 
