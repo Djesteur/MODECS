@@ -2,7 +2,17 @@
 
 GraphicSystem::GraphicSystem(): m_logWriter{"Output/Graphics/System"} {}
 
-void GraphicSystem::update(const unsigned int elapsedNanoTime) {}
+void GraphicSystem::update(const unsigned int elapsedNanoTime) {
+
+	for(const EntityAndComponent &currentEntity: m_datas) {
+
+		for(const std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
+
+			currentComponent->update(elapsedNanoTime);
+		}
+	}
+}
+
 void GraphicSystem::addComponent(const Entity &entity, std::map<std::string, std::string> &factoryParam) {
 
 	if(isInSystem(entity)) {

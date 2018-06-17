@@ -6,15 +6,15 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 	//Load examples
 
-	m_logWriter << "Loading examples tiles.";
+	m_logWriter << "Loading examples tiles.\n";
 
 	std::map<std::string, Entity> mapExamples{constructExampleTiles("Data/Tiles/TilesPath", keeper, system, tileSize)};
 
-	m_logWriter << std::to_string(static_cast<unsigned int>(mapExamples.size())) << "examples tiles has been loaded: ";
+	m_logWriter << mapExamples.size() << " examples tiles has been loaded:\n";
 
 	for(std::pair<std::string, Entity> currentTile: mapExamples) { m_logWriter << "\t" << currentTile.first << "\n"; }
 
-	m_logWriter << "Loading map tiles.";
+	m_logWriter << "Loading map tiles.\n";
 
 	std::list<Entity> tiles;
 	//Constructing map
@@ -23,7 +23,7 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 
 		if(mapExamples.size() != 0) {
 
-			std::ifstream mapFile{"Datas/Map/NewMap.txt"};
+			std::ifstream mapFile{"Data/Map/NewMap.txt"};
 
 			if(mapFile) {
 
@@ -39,17 +39,31 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 					tilePosition = sf::Vector2f{0.f, 0.f};
 					rotation = 0.f;
 
+					Entity currentEntity{keeper.newEntity()};
+					system.addEntity(currentEntity);
+
 					std::getline(mapFile, currentData);
+
+					//For each tile in file
 
 					while(currentData != "!!!") {
 
 						if(mapFile.eof()) { throw "Invalid file format at line " + std::to_string(currentLine); }
 
-						splitedDatas = splitdatas(currentData, '!');
+						splitedDatas = splitDatas(currentData, '!');
 						if(splitedDatas.size() == 2) {
 
-							//if(clone)
-							//if(position)
+							if(splitedDatas[0] == "Clone") {
+
+								for(std::pair<std::string, Entity> currentTile: mapExamples) {
+
+									if(currentTile.first == splitedDatas[1]) { system.copyAllComponents(currentTile.second, currentEntity); }
+								}
+							}
+
+							if(splitedDatas[0] == "PositionX") { std::istringstream(splitedDatas[1]) >> tilePosition.x; }
+							if(splitedDatas[0] == "PositionY") { std::istringstream(splitedDatas[1]) >> tilePosition.y; }
+							if(splitedDatas[0] == "Rotation") { std::istringstream(splitedDatas[1]) >> rotation; }
 
 						}
 
@@ -59,33 +73,56 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 						currentLine++;
 					}
 
+					system.setPosition(currentEntity, tilePosition);
+					system.rotate(currentEntity, rotation);
+					system.syncTextureRotation(currentEntity);
 
+					tiles.emplace_back(currentEntity);
 				}
 
 			}
 
-			else { throw "can't load file Datas/Map/NewMap.txt"}
+			else { throw "can't load file Datas/Map/NewMap.txt"; }
 		}
 
 		else { throw "problem with tiles example construction"; }
-
-		m_logWriter << "End of loading, deleting examples tiles.\n";
-
-		for(std::pair<std::string, Entity> currentTile: mapExamples) {
-
-			system.deleteEntity(currentTile.second);
-			keeper.deleteEntity(currentTile.second);
-		}
 	}
 
 	catch(const std::string &error) { 
 
-		m_logWriter << "ERROR: " << error << " while loading map.\n"; 
+		m_logWriter << "ERROR: " << error << " while loading map.\n";
+
+		for(Entity &currentEntity: tiles) {
+
+			system.deleteEntity(currentEntity);
+			keeper.deleteEntity(currentEntity);
+		}
+
 		tiles.clear();
 	}
 
-	m_logWriter << "The map has been loaded.\n.";
-	
+	catch(const char error[]) { 
+
+		m_logWriter << "ERROR: " << error << " while loading map.\n"; 
+		
+		for(Entity &currentEntity: tiles) {
+
+			system.deleteEntity(currentEntity);
+			keeper.deleteEntity(currentEntity);
+		}
+
+		tiles.clear();
+	}
+
+	m_logWriter << "End of loading, deleting examples tiles.\n";
+
+	for(std::pair<std::string, Entity> currentTile: mapExamples) {
+
+		system.deleteEntity(currentTile.second);
+		keeper.deleteEntity(currentTile.second);
+	}
+
+	m_logWriter << "The map has been loaded.\n";
 
 	return tiles;
 }

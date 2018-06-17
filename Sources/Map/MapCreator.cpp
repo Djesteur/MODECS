@@ -39,7 +39,7 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 				//Hexagon
 
 			    std::default_random_engine engine{static_cast<long unsigned int>(std::time(nullptr))};
-			    std::uniform_int_distribution<unsigned int> random(0, m_hexaTiles.size()); 
+			    std::uniform_int_distribution<unsigned int> random(0, m_hexaTiles.size()-1); 
 
 				for(unsigned int i{0}; i < mapSize.x*mapSize.y; i++) {
 
@@ -48,8 +48,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 					sf::Vector2f pos{(i%mapSize.x)*tileSpace + ((i/mapSize.x)%2)*spacement.x,
 									 (i/mapSize.x)*spacement.y};
 
-					mapFile << "PositionX!" << std::to_string(pos.x) << std::endl;
-					mapFile << "PositionY!" << std::to_string(pos.y) << std::endl;
+					mapFile << "PositionX!" << pos.x << std::endl;
+					mapFile << "PositionY!" << pos.y << std::endl;
 					mapFile << "Rotation!0" << std::endl;
 
 					mapFile << "!!!" << std::endl;
@@ -69,8 +69,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					currentHexa = i + i/(mapSize.x-1); 
 
-					mapFile << "PositionX!" << std::to_string(hexaPositions[currentHexa].x + tileSpace/2.f) << std::endl;
-					mapFile << "PositionY!" << std::to_string(hexaPositions[currentHexa].y) << std::endl;
+					mapFile << "PositionX!" << hexaPositions[currentHexa].x + tileSpace/2.f << std::endl;
+					mapFile << "PositionY!" << hexaPositions[currentHexa].y << std::endl;
 					mapFile << "Rotation!0" << std::endl;
 
 					mapFile << "!!!" << std::endl;
@@ -85,8 +85,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					currentHexa = i + i/(2*mapSize.x-1);
 
-					mapFile << "PositionX!" << std::to_string(hexaPositions[currentHexa].x + (tileSpace/2.f)*cosf(PI/3.f)) << std::endl;
-					mapFile << "PositionY!" << std::to_string(hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f)) << std::endl;
+					mapFile << "PositionX!" << hexaPositions[currentHexa].x + (tileSpace/2.f)*cosf(PI/3.f) << std::endl;
+					mapFile << "PositionY!" << hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f) << std::endl;
 					mapFile << "Rotation!60" << std::endl;
 
 					mapFile << "!!!" << std::endl;
@@ -101,8 +101,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					currentHexa = i + 1 + i/(2*mapSize.x-1);
 
-					mapFile << "PositionX!" << std::to_string(hexaPositions[currentHexa].x - (tileSpace/2.f)*cosf(PI/3.f)) << std::endl;
-					mapFile << "PositionY!" << std::to_string(hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f)) << std::endl;
+					mapFile << "PositionX!" << hexaPositions[currentHexa].x - (tileSpace/2.f)*cosf(PI/3.f) << std::endl;
+					mapFile << "PositionY!" << hexaPositions[currentHexa].y + (tileSpace/2.f)*sinf(PI/3.f) << std::endl;
 					mapFile << "Rotation!-60" << std::endl;
 
 					mapFile << "!!!" << std::endl;
@@ -116,8 +116,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					currentHexa = i + i/(mapSize.x-1);
 
-					mapFile << "PositionX!" << std::to_string(hexaPositions[currentHexa].x + tileSpace/2.f) << std::endl;
-					mapFile << "PositionY!" << std::to_string(hexaPositions[currentHexa].y + tileSize*(3.f + sqrtf(3.0))/6.f) << std::endl;
+					mapFile << "PositionX!" << hexaPositions[currentHexa].x + tileSpace/2.f << std::endl;
+					mapFile << "PositionY!" << hexaPositions[currentHexa].y + tileSize*(3.f + sqrtf(3.0))/6.f << std::endl;
 					mapFile << "Rotation!180" << std::endl;
 
 					mapFile << "!!!" << std::endl;
@@ -130,8 +130,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					currentHexa = i + mapSize.x + i/(mapSize.x-1);
 
-					mapFile << "PositionX!" << std::to_string(hexaPositions[currentHexa].x + tileSpace/2.f) << std::endl;
-					mapFile << "PositionY!" << std::to_string(hexaPositions[currentHexa].y - tileSize*(3.f + sqrtf(3.0))/6.f) << std::endl;
+					mapFile << "PositionX!" << hexaPositions[currentHexa].x + tileSpace/2.f << std::endl;
+					mapFile << "PositionY!" << hexaPositions[currentHexa].y - tileSize*(3.f + sqrtf(3.0))/6.f << std::endl;
 					mapFile << "Rotation!0" << std::endl;
 
 					mapFile << "!!!";

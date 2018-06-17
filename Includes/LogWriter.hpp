@@ -21,7 +21,16 @@ class LogWriter {
 		LogWriter(const std::string filePath);
 		~LogWriter();
 
-		void write(const std::string data);
+		template<typename T>
+		void write(const T data) {
+
+			if(m_canWrite) {
+
+				try { m_logFile << data << std::flush; }
+				catch(const std::exception &e) { std::cerr << e.what(); }
+			}
+		}
+
 		void addRDBuf(std::ostream &stream);
 
 	private:
@@ -31,6 +40,13 @@ class LogWriter {
 		const bool m_canWrite;
 };
 
-LogWriter &operator<<(LogWriter &writer, const std::string data);
+template<typename T>
+LogWriter &operator<<(LogWriter &writer, const T data) {
+
+	writer.write(data);
+	return writer;
+}
+
+
 
 #endif

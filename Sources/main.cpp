@@ -64,10 +64,7 @@ int main() {
 /* To do:
 
 	- Optimiser création de tiles (possible ?)
-	- Vérifier fichier lors du chargement
 	- Log du system
 	- "Optimiser" system
 	- Recherche dichotomique des entités
-	- template pour le log
-	 -terminer réécriture du chargement de la map
 */

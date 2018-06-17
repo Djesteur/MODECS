@@ -30,7 +30,7 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createSpriteComponent(const st
 	if(factoryParam.find("TextureName") != factoryParam.end()) {
 
 		newSpriteComponent = std::make_unique<SpriteComponent>(factoryParam.find("Name")->second, m_textureKeeper.getTexture(factoryParam.find("TextureName")->second));
-		m_logWriter << "Creating new sprite at adress " << std::to_string(reinterpret_cast<std::uintptr_t>(newSpriteComponent.get())) << " with arguments: \n";
+		m_logWriter << "Creating new sprite at adress " << reinterpret_cast<std::uintptr_t>(newSpriteComponent.get()) << " with arguments: \n";
 		writeArgumentsToLog(factoryParam);
 		//Rajouter rectangle sur la texture
 	}
