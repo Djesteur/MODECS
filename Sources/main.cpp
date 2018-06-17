@@ -18,7 +18,6 @@ int main() {
 	EntityKeeper keeper;
 
 	const unsigned int tileSize{128};
-	const float tileSpace{tileSize*(1.f + sqrtf(3.f))};
 
 	MapCreator creator;
 	creator.create(sf::Vector2u{10, 10}, tileSize);
@@ -30,24 +29,49 @@ int main() {
 	window.setVerticalSyncEnabled(true);
 	
 	sf::Event event;
-	sf::View currentView{sf::Vector2f{640, 360}, sf::Vector2f{1280, 720}};
+	sf::View currentView{sf::Vector2f{0, 0}, sf::Vector2f{1280, 720}};
+
+	bool movingMouseMap{false};
+	float moveView{1.f};
+	sf::Vector2i oldMousePosition, newMousePosition;
 
 	while(window.isOpen()) {
+
+		//Event
 
 		while(window.pollEvent(event)) {
 
 			if(event.type == sf::Event::Closed) { window.close(); }
 
-			if(event.type == sf::Event::KeyPressed) {
+			if(event.type == sf::Event::MouseWheelScrolled) {
 
-				if(event.key.code == sf::Keyboard::Z) { currentView.move(0.f, -tileSpace); }
-				if(event.key.code == sf::Keyboard::S) { currentView.move(0.f, tileSpace); }
-				if(event.key.code == sf::Keyboard::Q) { currentView.move(-tileSpace, 0.f); }
-				if(event.key.code == sf::Keyboard::D) { currentView.move(tileSpace, 0.f); }
+				if(event.mouseWheelScroll.delta > 0) { currentView.zoom(0.8f); moveView *= 0.8f; }
+				if(event.mouseWheelScroll.delta < 0) { currentView.zoom(1.25f); moveView *= 1.25f; }
+			}
+
+			if(event.type == sf::Event::MouseButtonPressed) {
+
+				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = true; oldMousePosition = sf::Mouse::getPosition(); } 
+			}
+
+			if(event.type == sf::Event::MouseButtonReleased) {
+
+				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = false; } 
 			}
 		}
 
+		//Update
+
 		system.update(0);
+
+		if(movingMouseMap) {
+
+			newMousePosition = sf::Mouse::getPosition();
+			currentView.move((oldMousePosition.x - newMousePosition.x)*moveView, (oldMousePosition.y - newMousePosition.y)*moveView);
+			oldMousePosition = newMousePosition;
+		}
+
+		//Draw
 
 		window.clear(sf::Color::Black);
 
@@ -65,5 +89,4 @@ int main() {
 
 	- Optimiser création de map (possible ?)
 	- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
-	- Refaire factory ?
 */
