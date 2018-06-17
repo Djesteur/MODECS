@@ -105,8 +105,15 @@ int main() {
 	return 0;
 }
 
-/* To do:
+/* 
+	To do:
 
-	- Optimiser création de map (possible ?)
-	- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
+		- Optimiser création de map (possible ?)
+		- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
+
+	To start:
+
+		- system vision (joueur = 1 entité ?)
+		- system pathfinding
+		- GDD
 */
