@@ -33,6 +33,9 @@ int main() {
 
 	bool movingMouseMap{false};
 	float moveView{1.f};
+
+	const unsigned int minZoom{1}, maxZoom{11};
+	unsigned int currentZoom{11};
 	sf::Vector2i oldMousePosition, newMousePosition;
 
 	while(window.isOpen()) {
@@ -45,8 +48,25 @@ int main() {
 
 			if(event.type == sf::Event::MouseWheelScrolled) {
 
-				if(event.mouseWheelScroll.delta > 0) { currentView.zoom(0.8f); moveView *= 0.8f; }
-				if(event.mouseWheelScroll.delta < 0) { currentView.zoom(1.25f); moveView *= 1.25f; }
+				if(event.mouseWheelScroll.delta > 0) { 
+
+					if(currentZoom < maxZoom) {
+
+						currentView.zoom(0.8f); 
+						moveView *= 0.8f; 
+						currentZoom++;
+					}
+				}
+
+				if(event.mouseWheelScroll.delta < 0) { 
+
+					if(currentZoom > minZoom) {
+
+						currentView.zoom(1.25f); 
+						moveView *= 1.25f; 
+						currentZoom--;
+					}
+				}
 			}
 
 			if(event.type == sf::Event::MouseButtonPressed) {

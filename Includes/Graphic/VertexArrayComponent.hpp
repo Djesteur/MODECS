@@ -31,7 +31,9 @@ class VertexArrayComponent: public GraphicComponent {
 
 		virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
-		sf::VertexArray m_array;
+		void syncBorders();
+
+		sf::VertexArray m_array, m_borders;
 		const bool m_usingTexture;
 
 		std::vector<sf::Vector2f> m_originalPosition; //Needed for setPosition function
