@@ -12,10 +12,10 @@ class EntityKeeper {
 
 	public:
 
+		EntityKeeper();
 		EntityKeeper(const Entity &) = delete;
 		EntityKeeper &operator=(const Entity &) = delete;
-
-		EntityKeeper();
+		
 		~EntityKeeper();
 
 		Entity& newEntity();

@@ -17,6 +17,7 @@
 
 #include "Entity/EntityKeeper.hpp"
 
+#include "Utils/StringUtils.hpp"
 #include "Utils/MathUtils.hpp"
 
 #include "LogWriter.hpp"
@@ -32,8 +33,12 @@ class MapCreator {
 		void create(const sf::Vector2u mapSize, const unsigned int tileSize);
 
 	private:
+
+		bool loadTilesTypes(const std::string filePath);
 		
 		LogWriter m_logWriter;
+
+		std::vector<std::string> m_hexaTiles, m_squareTiles, m_triangleTiles;
 };
 
 //Rajouter gestion des erreurs dans le chargement

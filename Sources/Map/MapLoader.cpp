@@ -1,119 +1,185 @@
 #include "Map/MapLoader.hpp"
 
-MapLoader::MapLoader(): m_logWriter{"Output/Map/Loader"} {}
+MapLoader::MapLoader(): m_logWriter{"Output/Map/MapLoader"} {}
 
 std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize) {
 
-	m_logWriter << "Loading map file.\n";
+	//Load examples
 
-	std::ifstream mapFile{"Data/Map"};
+	m_logWriter << "Loading examples tiles.";
 
-	m_logWriter << "Loading temporary entities.\n";
+	std::map<std::string, Entity> mapExamples{constructExampleTiles("Data/Tiles/TilesPath", keeper, system, tileSize)};
 
-	std::string currentData;
-	std::vector<std::string> splitedDatas;
+	m_logWriter << std::to_string(static_cast<unsigned int>(mapExamples.size())) << "examples tiles has been loaded: ";
 
-	std::map<std::string, std::string> correspondingTilePath;
-	std::map<std::string, Entity> correspondingTileEntity;
+	for(std::pair<std::string, Entity> currentTile: mapExamples) { m_logWriter << "\t" << currentTile.first << "\n"; }
 
-	std::ifstream tmpEntitiesFile{"Data/TilePath"};
-
-	while(std::getline(tmpEntitiesFile, currentData)) {
-
-		splitedDatas = splitDatas(currentData, '!');
-		correspondingTilePath.insert(std::make_pair(splitedDatas[0], splitedDatas[1]));
-		correspondingTileEntity.insert(std::make_pair(splitedDatas[0], Entity{keeper.newEntity()}));
-		system.addEntity(correspondingTileEntity[splitedDatas[0]]);	
-	}
-
-	tmpEntitiesFile.close();
-
-	std::string textureName;
-	std::map<std::string, std::string> tileParams;
-
-	sf::Vector2f textureCenter{0.f, 0.f};
-
-	for(std::pair<std::string, Entity> currentTile: correspondingTileEntity) {
-
-		tmpEntitiesFile.open(correspondingTilePath[currentTile.first]);
-
-		std::getline(tmpEntitiesFile, textureName);
-		std::getline(tmpEntitiesFile, currentData);
-		std::istringstream(currentData) >> textureCenter.x >> textureCenter.y;
-		std::getline(tmpEntitiesFile, currentData);
-
-		if(currentData == "Hexagon") { tileParams = constructHexa(textureName, textureCenter, tileSize); }
-		if(currentData == "Square") { tileParams = constructSquare(textureName, textureCenter, tileSize); }
-		if(currentData == "Triangle") { tileParams = constructTriangle(textureName, textureCenter, tileSize); }
-
-		system.addComponent(currentTile.second, tileParams);
-
-		tmpEntitiesFile.close();
-	}
-
-	m_logWriter << "Assigning entities to tiles.\n";
+	m_logWriter << "Loading map tiles.";
 
 	std::list<Entity> tiles;
-	sf::Vector2f position{0.f, 0.f};
-	float rotation{0};
+	//Constructing map
 
-	//Mettre des trow/catch au cas ou fichier mal formé
+	try {
 
-	while(std::getline(mapFile, currentData)) {
+		if(mapExamples.size() != 0) {
 
-		tiles.emplace_back(keeper.newEntity());
-		system.addEntity(tiles.back());
+			std::ifstream mapFile{"Datas/Map/NewMap.txt"};
 
-		position = sf::Vector2f{0.f, 0.f};
-		rotation = 0.f;
+			if(mapFile) {
 
-		m_logWriter << "\tA new entity as been created";
+				std::string currentData;
+				std::vector<std::string> splitedDatas;
+				sf::Vector2f tilePosition{0.f, 0.f};
+				float rotation{0.f};
 
-		while(currentData != "/!\\") {
+				unsigned int currentLine{0};
 
-			splitedDatas = splitDatas(currentData, '!');
+				while(!mapFile.eof()) {
 
-			if(splitedDatas[0] == "Clone") {
+					tilePosition = sf::Vector2f{0.f, 0.f};
+					rotation = 0.f;
 
-				for(std::pair<std::string, Entity> currentTile: correspondingTileEntity) {
+					std::getline(mapFile, currentData);
 
-					if(splitedDatas[1] == currentTile.first) { 
+					while(currentData != "!!!") {
 
-						system.copyAllComponents(currentTile.second, tiles.back());
-						m_logWriter << " as clone of " << currentTile.first; 
+						if(mapFile.eof()) { throw "Invalid file format at line " + std::to_string(currentLine); }
+
+						splitedDatas = splitdatas(currentData, '!');
+						if(splitedDatas.size() == 2) {
+
+							//if(clone)
+							//if(position)
+
+						}
+
+						else { throw "Invalid data format at line " + std::to_string(currentLine); }
+
+						std::getline(mapFile, currentData);
+						currentLine++;
 					}
+
+
 				}
+
 			}
 
-			if(splitedDatas[0] == "PositionX") { std::istringstream(splitedDatas[1]) >> position.x; }
-			if(splitedDatas[0] == "PositionY") { std::istringstream(splitedDatas[1]) >> position.y; }
-			if(splitedDatas[0] == "Rotation") { std::istringstream(splitedDatas[1]) >> rotation; }
-
-			std::getline(mapFile, currentData);
+			else { throw "can't load file Datas/Map/NewMap.txt"}
 		}
 
-		system.setPosition(tiles.back(), position);
+		else { throw "problem with tiles example construction"; }
 
-		system.rotate(tiles.back(), rotation);
-		system.syncTextureRotation(tiles.back());
+		m_logWriter << "End of loading, deleting examples tiles.\n";
 
-		m_logWriter << " with position (" << std::to_string(position.x) << ", " << std::to_string(position.y) << ").\n"; 
+		for(std::pair<std::string, Entity> currentTile: mapExamples) {
+
+			system.deleteEntity(currentTile.second);
+			keeper.deleteEntity(currentTile.second);
+		}
 	}
 
-	m_logWriter << "Number of tiles: " << std::to_string(tiles.size()) << ".\n";
-	m_logWriter << "End of the map construction, deleting temporary entites.\n";
+	catch(const std::string &error) { 
 
-	mapFile.close();
-
-	for(std::pair<std::string, Entity> currentTile: correspondingTileEntity) {
-
-		system.deleteEntity(currentTile.second);
-		keeper.deleteEntity(currentTile.second);
+		m_logWriter << "ERROR: " << error << " while loading map.\n"; 
+		tiles.clear();
 	}
 
-	m_logWriter << "End of the construction.\n";
+	m_logWriter << "The map has been loaded.\n.";
+	
 
 	return tiles;
+}
+
+std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string path, EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize) {
+
+	std::map<std::string, Entity> examples;
+	std::map<std::string, std::string> tilesPath;
+
+	unsigned int currentLine{0}; 
+
+	try {
+
+		//Load list of examples tiles
+
+		std::ifstream examplesPath{path};
+
+		if(examplesPath) {
+
+			std::string currentData;
+
+			while(std::getline(examplesPath, currentData)) {
+
+				if(currentData != "!!!") {
+
+					std::vector<std::string> splitedDatas{splitDatas(currentData, '!')};
+
+					if(splitedDatas.size() == 2) { tilesPath.insert(std::make_pair(splitedDatas[0], splitedDatas[1])); }
+					else { throw "invalid data at line " + currentLine; }
+				}
+
+				currentLine++;
+			}
+		}
+
+		else { throw "can't open file" + path; }
+
+		//Construct each example tile
+
+		std::ifstream currentTileFile;
+		std::string textureName, tileType, currentData;
+		sf::Vector2f texturePosition;
+
+		for(std::pair<std::string, std::string> currentTile: tilesPath) {
+
+			examples.insert(std::make_pair(currentTile.first, keeper.newEntity()));
+			system.addEntity(examples[currentTile.first]);
+
+			currentTileFile.open(currentTile.second);
+
+			if(currentTileFile) {
+
+				std::getline(currentTileFile, textureName);
+
+				if(currentTileFile.eof()) { throw "invalid data format in file " + currentTile.second; }
+
+				std::getline(currentTileFile, currentData);
+				std::istringstream(currentData) >> texturePosition.x >> texturePosition.y;
+
+				if(currentTileFile.eof()) { throw "invalid data format in file " + currentTile.second; }
+
+				std::getline(currentTileFile, tileType);
+
+				if(!currentTileFile.eof()) { throw "invalid data format in file " + currentTile.second; }
+
+				std::map<std::string, std::string> componentDatas;
+
+				if(tileType == "Hexagon") { componentDatas = constructHexa(textureName, texturePosition, tileSize); }
+				if(tileType == "Square") { componentDatas = constructSquare(textureName, texturePosition, tileSize); }
+				if(tileType == "Triangle") { componentDatas = constructTriangle(textureName, texturePosition, tileSize); }
+
+				system.addComponent(examples[currentTile.first], componentDatas);
+
+				currentTileFile.close();
+			}
+
+			else { throw "can't open file " + currentTile.second; }
+		}
+	}
+
+	catch(const std::string &error) {
+
+		m_logWriter << "ERROR: " << error << " while constructing examples.\n";
+
+		for(std::pair<std::string, Entity> currentTile: examples) {
+
+			system.deleteEntity(currentTile.second);
+			keeper.deleteEntity(currentTile.second);
+		}
+
+		examples.clear();
+	}
+
+	return examples;
 }
 
 std::map<std::string, std::string> MapLoader::constructHexa(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size) {

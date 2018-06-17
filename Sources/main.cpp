@@ -18,7 +18,7 @@ int main() {
 	EntityKeeper keeper;
 
 	const unsigned int tileSize{128};
-	const float tileSpace{tileSize*(1 + sqrtf(3.f))};
+	const float tileSpace{tileSize*(1.f + sqrtf(3.f))};
 
 	MapCreator creator;
 	creator.create(sf::Vector2u{10, 10}, tileSize);
@@ -61,9 +61,13 @@ int main() {
 	return 0;
 }
 
-/* Encore a faire:
+/* To do:
 
-	- Optimiser création de tiles
+	- Optimiser création de tiles (possible ?)
 	- Vérifier fichier lors du chargement
 	- Log du system
+	- "Optimiser" system
+	- Recherche dichotomique des entités
+	- template pour le log
+	 -terminer réécriture du chargement de la map
 */
