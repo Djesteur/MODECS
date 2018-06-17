@@ -33,6 +33,8 @@ class GraphicFactory {
 		std::unique_ptr<GraphicComponent> createSpriteComponent(const std::map<std::string, std::string> &factoryParam);
 		std::unique_ptr<GraphicComponent> createVertexArrayComponent(const std::map<std::string, std::string> &factoryParam);
 
+		bool checkArguments(const std::map<std::string, std::string> &factoryParam, const std::vector<std::string> argumentsToCheck);
+
 		void writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam);
 
 		TextureKeeper m_textureKeeper;

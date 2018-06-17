@@ -12,7 +12,7 @@ Entity::Entity(const unsigned int id, LogWriter *logFile):
 	m_isValid{true},
 	m_parent{nullptr},
 	m_redirection{nullptr},
-	m_logWriter{logFile} { *m_logWriter << "NewEntity ------- " << reinterpret_cast<std::uintptr_t>(this) << " ID: " << m_ID << "\n"; }
+	m_logWriter{logFile} { *m_logWriter << "NewEntity ------- " << this << " ID: " << m_ID << "\n"; }
 
 Entity::Entity(const Entity &entity): 
 	m_ID{entity.m_ID},
@@ -27,7 +27,7 @@ Entity::Entity(const Entity &entity):
 		m_isValid = m_redirection->m_isValid;
 		m_logWriter = m_redirection->m_logWriter;
 
-		*m_logWriter << "CopyConstructor - " << reinterpret_cast<std::uintptr_t>(this) << " (ID: " << m_redirection->m_ID 
+		*m_logWriter << "CopyConstructor - " << this << " (ID: " << m_redirection->m_ID 
 						 << " Adress: " << reinterpret_cast<std::uintptr_t>(m_redirection) << ")" << "\n";
 	}
 
@@ -43,17 +43,17 @@ Entity &Entity::operator=(const Entity &entity) {
 	m_isValid = m_redirection->m_isValid;
 	m_logWriter = m_redirection->m_logWriter;
 
-	*m_logWriter << "CopyOperator ---- " << reinterpret_cast<std::uintptr_t>(this) << " (ID: " << m_redirection->m_ID
-		             << " Adress: " << reinterpret_cast<std::uintptr_t>(this) << ")" << "\n";
+	*m_logWriter << "CopyOperator ---- " << this << " (ID: " << m_redirection->m_ID
+		             << " Adress: " << this << ")" << "\n";
 
 	return *this;
 }
 
 Entity::~Entity() {
 
-	if(m_redirection == nullptr) { *m_logWriter << "Destroying ------ " << reinterpret_cast<std::uintptr_t>(this) << " ID: " << m_ID << "\n"; }
-	else { *m_logWriter << "Destroying ------ " << reinterpret_cast<std::uintptr_t>(this) << " (ID: " << m_redirection->m_ID
-							<< " Adress: " << reinterpret_cast<std::uintptr_t>(this) << ")" << "\n"; }
+	if(m_redirection == nullptr) { *m_logWriter << "Destroying ------ " << this << " ID: " << m_ID << "\n"; }
+	else { *m_logWriter << "Destroying ------ " << this << " (ID: " << m_redirection->m_ID
+							<< " Adress: " << this << ")" << "\n"; }
  }
 
 
@@ -65,9 +65,14 @@ void Entity::changeParent(Entity &parent) {
 	else {
 
 		if(m_redirection->isValid()) { m_redirection->changeParent(parent); }
-		else { *m_logWriter << "InvalidAcces " << reinterpret_cast<std::uintptr_t>(this) << " (ID: " << m_ID 
-								<< " Adress: " << reinterpret_cast<std::uintptr_t>(this) << ")" << "\n"; }
+		else { *m_logWriter << "InvalidAcces " << this << " (ID: " << m_ID 
+								<< " Adress: " << this << ")" << "\n"; }
 	}
 }
 
 bool Entity::isValid() const { return m_isValid; }
+
+
+
+
+std::ofstream &operator<<(std::ofstream &out, const Entity &entity) { out << entity.m_ID; return out; }

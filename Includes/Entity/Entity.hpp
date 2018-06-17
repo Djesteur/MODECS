@@ -32,6 +32,7 @@ class Entity {
 	private:
 
 		friend class EntityKeeper;
+		friend std::ofstream &operator<<(std::ofstream& out, const Entity &entity);
 
 		const unsigned int m_ID;
 
@@ -43,5 +44,6 @@ class Entity {
 		LogWriter *m_logWriter;
 };
 
+std::ofstream &operator<<(std::ofstream &out, const Entity &entity);
 
 #endif

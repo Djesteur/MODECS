@@ -63,8 +63,7 @@ int main() {
 
 /* To do:
 
-	- Optimiser création de tiles (possible ?)
-	- Log du system
-	- "Optimiser" system
-	- Recherche dichotomique des entités
+	- Optimiser création de map (possible ?)
+	- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
+	- Refaire factory ?
 */

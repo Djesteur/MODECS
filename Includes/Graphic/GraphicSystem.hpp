@@ -19,6 +19,7 @@
 #include "LogWriter.hpp"
 
 using EntityAndComponent = std::pair<Entity, std::list<std::unique_ptr<GraphicComponent>>>;
+//Entity as ID with a list of component
 
 class GraphicSystem {
 
@@ -29,23 +30,28 @@ class GraphicSystem {
 
 		GraphicSystem();
 
-		void update(const unsigned int elapsedNanoTime);
+		//Adding, copying and deleting
 
 		void addEntity(const Entity &entity);
 		void addComponent(const Entity &entity, std::map<std::string, std::string> &factoryParam);
-
+		void copyAllComponents(const Entity &from, const Entity &to);
 		void deleteEntity(const Entity &entity);
 
-		bool isInSystem(const Entity &entity) const;
-		bool haveComponent(const Entity &entity, const std::string &name) const;
+		//Checkers
 
-		void drawComponents(sf::RenderWindow &window) const;
+		bool isInSystem(const Entity &entity);
+		bool haveComponent(const Entity &entity, const std::string &name);
 
-		void copyAllComponents(const Entity &from, const Entity &to);
+		//Apply to 1 component
 
 		void setPosition(const Entity &entity, const sf::Vector2f newPosition);
 		void rotate(const Entity &entity, const float rotation);
 		void syncTextureRotation(const Entity &entity);
+
+
+		//Apply to all components
+		void drawComponents(sf::RenderWindow &window) const;
+		void update(const unsigned int elapsedNanoTime);
 
 	private:
 
@@ -55,9 +61,7 @@ class GraphicSystem {
 
 		LogWriter m_logWriter;
 
-		//Entity as ID with a list of component
-		//A optimiser: a chaque fois, on vérifie puis on applique l'operation, autant tout faire d'un coup
-		//Log: informations dans le log ? necessite afficher Entity.m_ID
+		std::list<EntityAndComponent>::iterator m_lastResearchEntity;
 };
 
 

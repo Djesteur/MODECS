@@ -114,6 +114,8 @@ std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, c
 		tiles.clear();
 	}
 
+	m_logWriter << tiles.size() << " tiles has been loaded.\n";
+
 	m_logWriter << "End of loading, deleting examples tiles.\n";
 
 	for(std::pair<std::string, Entity> currentTile: mapExamples) {

@@ -6,19 +6,30 @@ std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std:
 
 	std::unique_ptr<GraphicComponent> newComponent{nullptr};
 
-	if(factoryParam.find("Name") != factoryParam.end()) {
+	try {
 
-		if(factoryParam.find("Type")->second == "Sprite") { newComponent = createSpriteComponent(factoryParam); }
-		if(factoryParam.find("Type")->second == "VertexArray") { newComponent = createVertexArrayComponent(factoryParam); }
-	}
+		if(factoryParam.find("Name") != factoryParam.end()) {
 
-	if(newComponent != nullptr) { //Sinon, type invalide ou paramètre manquant
+			if(factoryParam.find("Type") != factoryParam.end()) {
 
-		if(factoryParam.find("PosX") != factoryParam.end() && factoryParam.find("PosY") != factoryParam.end()) {
+				std::string type{factoryParam.find("Type")->second};
 
-			newComponent->setPosition(sf::Vector2f{std::stof(factoryParam.find("PosX")->second), std::stof(factoryParam.find("PosY")->second)});
+				if(type == "Sprite") { newComponent = createSpriteComponent(factoryParam); }
+				else if(type == "VertexArray") { newComponent = createVertexArrayComponent(factoryParam); }
+				else { throw "unknown type " + type; }
+
+				if(newComponent == nullptr) { throw " problem with construction of " + type; }
+			}
+
+			else { throw "can't find agument \"Type\""; }
 		}
+
+		else { throw "can't find argument \"Name\""; }
 	}
+
+	catch(const std::string &error) {  m_logWriter << "ERROR: " << error << " with arguments:\n"; }
+
+	writeArgumentsToLog(factoryParam); //Must be writing with or without errors
 
 	return newComponent;
 }
@@ -26,14 +37,20 @@ std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std:
 std::unique_ptr<GraphicComponent> GraphicFactory::createSpriteComponent(const std::map<std::string, std::string> &factoryParam) {
 
 	std::unique_ptr<GraphicComponent> newSpriteComponent{nullptr};
+	const std::vector<std::string> argumentsToCheck{"TextureName"};
 
-	if(factoryParam.find("TextureName") != factoryParam.end()) {
+	try {
 
-		newSpriteComponent = std::make_unique<SpriteComponent>(factoryParam.find("Name")->second, m_textureKeeper.getTexture(factoryParam.find("TextureName")->second));
-		m_logWriter << "Creating new sprite at adress " << reinterpret_cast<std::uintptr_t>(newSpriteComponent.get()) << " with arguments: \n";
-		writeArgumentsToLog(factoryParam);
-		//Rajouter rectangle sur la texture
+		if(checkArguments(factoryParam, argumentsToCheck)) {
+
+			newSpriteComponent = std::make_unique<SpriteComponent>(factoryParam.find("Name")->second, m_textureKeeper.getTexture(factoryParam.find("TextureName")->second));
+			m_logWriter << "Creating new sprite at adress " << newSpriteComponent.get() << " with arguments:\n";
+		}
+
+		else { throw "arguments missing"; }
 	}
+
+	catch(const std::string &error) { m_logWriter << "ERROR: " << error << "\n"; }
 
 	return newSpriteComponent;
 }
@@ -41,73 +58,104 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createSpriteComponent(const st
 std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(const std::map<std::string, std::string> &factoryParam) {
 
 	std::unique_ptr<GraphicComponent> newVertexArrayComponent{nullptr};
+	const std::vector<std::string> argumentsToCheck{"TextureName"};
 
-	if(factoryParam.find("VertexArrayType") != factoryParam.end() && factoryParam.find("VertexNumber") != factoryParam.end()) {
+	try {
 
-		sf::VertexArray array;
+		if(checkArguments(factoryParam, argumentsToCheck)) {
 
-		if(factoryParam.find("VertexArrayType")->second == "LineStrip") { array.setPrimitiveType(sf::LineStrip); }
-		if(factoryParam.find("VertexArrayType")->second == "TriangleFan") { array.setPrimitiveType(sf::TriangleFan); }
-		if(factoryParam.find("VertexArrayType")->second == "Triangles") { array.setPrimitiveType(sf::Triangles); }
-		if(factoryParam.find("VertexArrayType")->second == "Quads") { array.setPrimitiveType(sf::Quads); }
-		//Mettre les autres types
+			sf::VertexArray array;
+			const std::string arrayType{factoryParam.find("VertexArrayType")->second};
 
-		const unsigned int nbVertices{static_cast<unsigned int>(std::stoul(factoryParam.find("VertexNumber")->second))};
+			if(arrayType == "Points") { array.setPrimitiveType(sf::Points); }
+			if(arrayType == "Lines") { array.setPrimitiveType(sf::Lines); }
+			if(arrayType == "LineStrip") { array.setPrimitiveType(sf::LineStrip); }
+			if(arrayType == "Triangles") { array.setPrimitiveType(sf::Triangles); }
+			if(arrayType == "TrianglesStrip") { array.setPrimitiveType(sf::TrianglesStrip); }
+			if(arrayType == "TriangleFan") { array.setPrimitiveType(sf::TriangleFan); }
+			if(arrayType == "Quads") { array.setPrimitiveType(sf::Quads); }
 
-		array.resize(nbVertices);
+			const unsigned int nbVertices{static_cast<unsigned int>(std::stoul(factoryParam.find("VertexNumber")->second))};
 
-		std::string splitedDatas;
+			array.resize(nbVertices);
 
-		for(unsigned int i{0}; i < nbVertices; i++) {
-
-			if(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X") != factoryParam.end() 
-			&& factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y") != factoryParam.end()) {
-
-				array[i].position = sf::Vector2f{std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X")->second),
-												 std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y")->second)};
-			}
-
-			if(factoryParam.find("VerticeColor!" + std::to_string(i)) != factoryParam.end()) {
-
-				array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor!" + std::to_string(i))->second))};
-			}
-		}
-
-		if(factoryParam.find("TextureName") != factoryParam.end()) {
+			std::string splitedDatas;
 
 			for(unsigned int i{0}; i < nbVertices; i++) {
 
-				if(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X") != factoryParam.end() &&
-				   factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y") != factoryParam.end()) {
+				if(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X") != factoryParam.end() 
+				&& factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y") != factoryParam.end()) {
 
-					array[i].texCoords = sf::Vector2f{std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X")->second),
-												      std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y")->second)};
+					array[i].position = sf::Vector2f{std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!X")->second),
+													 std::stof(factoryParam.find("VerticePosition!" + std::to_string(i) + "!Y")->second)};
 				}
+
+				else { m_logWriter << "WARNING: missing position for vertice " << i << ".\n"; }
 			}
 
-			newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second, 
-																			 m_textureKeeper.getTexture(factoryParam.find("TextureName")->second), 
-																			 array);
-		}
+			//Use texture
 
-		else { 
+			if(factoryParam.find("TextureName") != factoryParam.end()) {
 
-			for(unsigned int i{0}; i < nbVertices; i++) {
+				for(unsigned int i{0}; i < nbVertices; i++) {
 
-				if(factoryParam.find("VerticeColor!" + std::to_string(i)) != factoryParam.end()) {
+					if(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X") != factoryParam.end() &&
+					   factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y") != factoryParam.end()) {
 
-					array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor!" + std::to_string(i))->second))};
+						array[i].texCoords = sf::Vector2f{std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!X")->second),
+													      std::stof(factoryParam.find("VerticeTexture!" + std::to_string(i) + "!Y")->second)};
+					}
+
+					else { m_logWriter << "WARNING: missing texture position for vertice " << i << ".\n"; }
 				}
+
+				newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second, 
+																				 m_textureKeeper.getTexture(factoryParam.find("TextureName")->second), 
+																				 array);
 			}
 
-			newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second,array);
+			//Use color
+
+			else { 
+
+				for(unsigned int i{0}; i < nbVertices; i++) {
+
+					if(factoryParam.find("VerticeColor!" + std::to_string(i)) != factoryParam.end()) {
+
+						array[i].color = sf::Color{static_cast<sf::Uint32>(convertStringHexToUnsigned(factoryParam.find("VerticeColor!" + std::to_string(i))->second))};
+					}
+
+					else { m_logWriter << "WARNING: missing color for vertice " << i << ".\n"; }
+				}
+
+				newVertexArrayComponent = std::make_unique<VertexArrayComponent>(factoryParam.find("Name")->second, array);
+			}
+
+			m_logWriter << "Creating new VertexArray at adress " << newVertexArrayComponent.get() << " with arguments: \n";
 		}
 
-		m_logWriter << "Creating new VertexArray at adress " << std::to_string(reinterpret_cast<std::uintptr_t>(newVertexArrayComponent.get())) << " with arguments: \n";
-		writeArgumentsToLog(factoryParam);
+		else { throw "arguments missing"; }
 	}
 
+	catch(const std::string &error) { m_logWriter << "ERROR: " << error << "\n"; }
+
 	return newVertexArrayComponent;
+}
+
+bool GraphicFactory::checkArguments(const std::map<std::string, std::string> &factoryParam, const std::vector<std::string> argumentsToCheck) {
+
+	bool result{true};
+
+	for(const std::string &currentArgument: argumentsToCheck) {
+
+		if(factoryParam.find(currentArgument) == factoryParam.end()) { 
+
+			m_logWriter << "ERROR: missing argument " + currentArgument + ".\n";
+			result = false;
+		}
+	}
+
+	return result;
 }
 
 void GraphicFactory::writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam) {

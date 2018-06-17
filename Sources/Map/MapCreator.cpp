@@ -23,6 +23,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 	const std::string mapPath{"Data/Map/NewMap.txt"};
 
+	m_logWriter << "Begin of creating map of size " << mapSize.x << "*" << mapSize.y << ".\n";
+
 	if(loadTilesTypes("Data/Tiles/TilesPath")) {
 
 		try {
@@ -57,6 +59,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 					hexaPositions.emplace_back(pos);
 				}
 
+				m_logWriter << mapSize.x*mapSize.y << " hexagon tiles added.\n";
+
 				//Square
 
 				unsigned int currentHexa{0};
@@ -76,6 +80,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 					mapFile << "!!!" << std::endl;
 				}
 
+				m_logWriter << nbSquares << " square tiles added.\n";
+
 				nbSquares = (2*mapSize.x-1)*static_cast<int>(mapSize.y/2);
 				if(mapSize.y%2 == 0) { nbSquares -= mapSize.x-1; }
 
@@ -92,6 +98,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 					mapFile << "!!!" << std::endl;
 				}
 
+				m_logWriter << nbSquares << " square tiles added.\n";
+
 				nbSquares = (2*mapSize.x-1)*static_cast<int>(mapSize.y/2);
 				if(mapSize.y%2 == 0) { nbSquares -= mapSize.x; }
 
@@ -107,6 +115,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					mapFile << "!!!" << std::endl;
 				}
+
+				m_logWriter << nbSquares << " square tiles added.\n";
 
 				//Triangle
 
@@ -138,6 +148,10 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 
 					if(i != (mapSize.x-1)*(mapSize.y-1) -1) { mapFile << std::endl; }
 				}
+
+				m_logWriter << 2*(mapSize.x-1)*(mapSize.y-1) << " triangle tiles added.\n";
+
+				m_logWriter << "End of creation.\n";
 
 				mapFile.close();
 			}
