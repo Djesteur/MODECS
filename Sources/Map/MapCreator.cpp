@@ -2,28 +2,11 @@
 
 MapCreator::MapCreator(): m_logWriter{"Output/Map/MapCreator"} {}
 
-void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize) {
+void MapCreator::create(const sf::Vector2u mapSize, const std::string path) {
 
+	const std::string mapPath{path};
 
-	    /* Complexité:
-
-	    	- X*Y
-	    	- (X-1)*Y
-	    	- 2*(2*X-1)*(Y/2)
-	    	- 2*(X-1)(Y-1)
-
-	    	= 8XY-(3/2)Y - 4(X + y + 1)
-
-	    	si X == Y
-
-	    	= 8n² - (3/2)n - 4(2n +1)
-	    	= 8n² - (3/2)n - 8n + 4
-	    	= 8n² - (19/2)n  + 4
-	    	*/
-
-	const std::string mapPath{"Data/Map/NewMap.txt"};
-
-	m_logWriter << "Begin of creating map of size " << mapSize.x << "*" << mapSize.y << ".\n";
+	m_logWriter << "Begin of creating map of size " << mapSize.x << "x" << mapSize.y << ".\n";
 
 	if(loadTilesTypes("Data/Tiles/TilesPath")) {
 
@@ -32,9 +15,6 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 			std::ofstream mapFile{mapPath};
 
 			if(mapFile) {
-
-				const float tileSpace{tileSize*(1 + sqrtf(3.f))};
-				const sf::Vector2f spacement{tileSpace/2.f, tileSpace*sqrtf(3.f)/2.f};
 
 				std::vector<sf::Vector2f> hexaPositions;
 
@@ -46,20 +26,15 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 				for(unsigned int i{0}; i < mapSize.x*mapSize.y; i++) {
 
 					mapFile << "Clone!" << m_hexaTiles[random(engine)] << std::endl;
-
-					sf::Vector2f pos{(i%mapSize.x)*tileSpace + ((i/mapSize.x)%2)*spacement.x,
-									 (i/mapSize.x)*spacement.y};
-
-					mapFile << "PositionX!" << pos.x << std::endl;
-					mapFile << "PositionY!" << pos.y << std::endl;
-					mapFile << "Rotation!0" << std::endl;
+					mapFile << "PositionX!" << i%mapSize.x << std::endl;
+					mapFile << "PositionY!" << i/mapSize.x << std::endl;
 
 					mapFile << "!!!" << std::endl;
-
-					hexaPositions.emplace_back(pos);
 				}
 
 				m_logWriter << mapSize.x*mapSize.y << " hexagon tiles added.\n";
+
+				/*
 
 				//Square
 
@@ -150,6 +125,8 @@ void MapCreator::create(const sf::Vector2u mapSize, const unsigned int tileSize)
 				}
 
 				m_logWriter << 2*(mapSize.x-1)*(mapSize.y-1) << " triangle tiles added.\n";
+
+				*/
 
 				m_logWriter << "End of creation.\n";
 

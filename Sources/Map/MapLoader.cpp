@@ -2,132 +2,65 @@
 
 MapLoader::MapLoader(): m_logWriter{"Output/Map/MapLoader"} {}
 
-std::list<Entity> MapLoader::load(EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize) {
+std::list<Entity> MapLoader::load(const std::string mapPath, EntityKeeper &keeper, MovementSystem &movementSystem) {
 
-	//Load examples
-
-	m_logWriter << "Loading examples tiles.\n";
-
-	std::map<std::string, Entity> mapExamples{constructExampleTiles("Data/Tiles/TilesPath", keeper, system, tileSize)};
-
-	m_logWriter << mapExamples.size() << " examples tiles has been loaded:\n";
-
-	for(std::pair<std::string, Entity> currentTile: mapExamples) { m_logWriter << "\t" << currentTile.first << "\n"; }
-
-	m_logWriter << "Loading map tiles.\n";
-
+	const std::string endOfTile{"!!!"};
 	std::list<Entity> tiles;
+
 	//Constructing map
+
+	unsigned int currentLine{0};
 
 	try {
 
-		if(mapExamples.size() != 0) {
+		std::ifstream tilesFile{mapPath};
+		if(!tilesFile) { throw "Can't open tiles file \"" + mapPath + "\""; }
 
-			std::ifstream mapFile{"Data/Map/NewMap.txt"};
+		std::string currentData;
+		std::vector<std::string> newInformations;
+		std::map<std::string, std::string> tileInformations;
 
-			if(mapFile) {
+		while(!tilesFile.eof()) {
 
-				std::string currentData;
-				std::vector<std::string> splitedDatas;
-				sf::Vector2f tilePosition{0.f, 0.f};
-				float rotation{0.f};
+			std::getline(tilesFile, currentData);
 
-				unsigned int currentLine{0};
+			while(currentData != endOfTile) {
 
-				while(!mapFile.eof()) {
+				newInformations = splitDatas(currentData, '!');
 
-					tilePosition = sf::Vector2f{0.f, 0.f};
-					rotation = 0.f;
+				if(newInformations.size() != 2) { throw "Invalid information format"; }
+				else { tileInformations.insert(std::make_pair(newInformations[0], newInformations[1])); }
 
-					Entity currentEntity{keeper.newEntity()};
-					system.addEntity(currentEntity);
-
-					std::getline(mapFile, currentData);
-
-					//For each tile in file
-
-					while(currentData != "!!!") {
-
-						if(mapFile.eof()) { throw "Invalid file format at line " + std::to_string(currentLine); }
-
-						splitedDatas = splitDatas(currentData, '!');
-						if(splitedDatas.size() == 2) {
-
-							if(splitedDatas[0] == "Clone") {
-
-								for(std::pair<std::string, Entity> currentTile: mapExamples) {
-
-									if(currentTile.first == splitedDatas[1]) { system.copyAllComponents(currentTile.second, currentEntity); }
-								}
-							}
-
-							if(splitedDatas[0] == "PositionX") { std::istringstream(splitedDatas[1]) >> tilePosition.x; }
-							if(splitedDatas[0] == "PositionY") { std::istringstream(splitedDatas[1]) >> tilePosition.y; }
-							if(splitedDatas[0] == "Rotation") { std::istringstream(splitedDatas[1]) >> rotation; }
-
-						}
-
-						else { throw "Invalid data format at line " + std::to_string(currentLine); }
-
-						std::getline(mapFile, currentData);
-						currentLine++;
-					}
-
-					system.setPosition(currentEntity, tilePosition);
-					system.rotate(currentEntity, rotation);
-					system.syncTextureRotation(currentEntity);
-
-					tiles.emplace_back(currentEntity);
-				}
-
+				if(tilesFile.eof()) { throw "Invalid file format"; }
 			}
 
-			else { throw "can't load file Datas/Map/NewMap.txt"; }
+			tiles.push_back(keeper.newEntity());
+
+			extractMovementInformations(tiles.back(), tileInformations, movementSystem);
+
+			currentLine++;
 		}
 
-		else { throw "problem with tiles example construction"; }
+		if(currentData != endOfTile) { m_logWriter << "WARNING: the tile file have a bad end line.\n"; }
 	}
 
 	catch(const std::string &error) { 
 
-		m_logWriter << "ERROR: " << error << " while loading map.\n";
+		m_logWriter << "ERROR: " << error << " while loading map at line " << currentLine << ".\n";
 
-		for(Entity &currentEntity: tiles) {
+		for(Entity &currentEntity: tiles) { 
 
-			system.deleteEntity(currentEntity);
+			//movementSystem.deleteEntity(currentEntity);
 			keeper.deleteEntity(currentEntity);
 		}
 
 		tiles.clear();
 	}
-
-	catch(const char error[]) { 
-
-		m_logWriter << "ERROR: " << error << " while loading map.\n"; 
-		
-		for(Entity &currentEntity: tiles) {
-
-			system.deleteEntity(currentEntity);
-			keeper.deleteEntity(currentEntity);
-		}
-
-		tiles.clear();
-	}
-
-	m_logWriter << tiles.size() << " tiles has been loaded.\n";
-
-	m_logWriter << "End of loading, deleting examples tiles.\n";
-
-	for(std::pair<std::string, Entity> currentTile: mapExamples) {
-
-		system.deleteEntity(currentTile.second);
-		keeper.deleteEntity(currentTile.second);
-	}
-
-	m_logWriter << "The map has been loaded.\n";
 
 	return tiles;
 }
+
+/*
 
 std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string path, EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize) {
 
@@ -166,7 +99,7 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 
 		std::ifstream currentTileFile;
 		std::string textureName, tileType, currentData;
-		sf::Vector2f texturePosition;
+		sf::Vector2f texturePositiont;
 
 		for(std::pair<std::string, std::string> currentTile: tilesPath) {
 
@@ -220,6 +153,16 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 
 	return examples;
 }
+*/
+
+
+void MapLoader::extractPositionInformations(const Entity &entity, const std::map<std::string, std::string> &informations, PositionSystem &movementSystem) {
+
+
+
+}
+
+/*
 
 std::map<std::string, std::string> MapLoader::constructHexa(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size) {
 
@@ -325,4 +268,4 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + static_cast<float>(C.y))));
 
 	return componentArguments;
-}
+}*/

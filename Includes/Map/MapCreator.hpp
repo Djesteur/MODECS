@@ -30,7 +30,7 @@ class MapCreator {
 		MapCreator(const Entity &) = delete;
 		MapCreator &operator=(const Entity &) = delete;
 
-		void create(const sf::Vector2u mapSize, const unsigned int tileSize);
+		void create(const sf::Vector2u mapSize, const std::string path);
 
 	private:
 
@@ -40,7 +40,5 @@ class MapCreator {
 
 		std::vector<std::string> m_hexaTiles, m_squareTiles, m_triangleTiles;
 };
-
-//Rajouter gestion des erreurs dans le chargement
 
 #endif

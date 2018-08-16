@@ -3,6 +3,8 @@
 	This software is under CC BY-NC-SA 4.0 license (https://creativecommons.org/licenses/by-nc-sa/4.0/ for more informations)
 */
 
+#include <thread>
+
 #include <SFML/Graphics.hpp>
 
 #include "Graphic/GraphicSystem.hpp"
@@ -10,20 +12,26 @@
 #include "Entity/EntityKeeper.hpp"
 
 #include "Map/MapLoader.hpp"
-#include "Map/MapCreator.hpp"
+
+#include "Server/Server.hpp"
 
 int main() {
 
 	GraphicSystem system;
 	EntityKeeper keeper;
 
+	std::thread serverThread{[](){
+
+		const std::string mapPath{"Data/Map/NewMap"};
+
+		Server server;
+		server.startNewGame(1, sf::Vector2u{10, 10}, mapPath);
+		server.loadGame(mapPath);
+		server.runGame();
+	}};
+
+
 	const unsigned int tileSize{128};
-
-	MapCreator creator;
-	creator.create(sf::Vector2u{10, 10}, tileSize);
-
-	MapLoader loader;
-	loader.load(keeper, system, tileSize);
 
 	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS"};
 	window.setVerticalSyncEnabled(true);
@@ -101,6 +109,8 @@ int main() {
 
 		window.display();
 	}
+
+	if(serverThread.joinable()) { serverThread.join(); }
 	
 	return 0;
 }
@@ -110,10 +120,4 @@ int main() {
 
 		- Optimiser création de map (possible ?)
 		- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
-
-	To start:
-
-		- system vision (joueur = 1 entité ?)
-		- system pathfinding
-		- GDD
 */
