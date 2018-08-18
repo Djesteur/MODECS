@@ -16,6 +16,8 @@
 
 #include "Utils/StringUtils.hpp"
 
+#include "Movement/MovementSystem.hpp"
+
 #include "LogWriter.hpp"
 
 class PositionSystem;

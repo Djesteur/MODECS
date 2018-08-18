@@ -156,7 +156,7 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 */
 
 
-void MapLoader::extractPositionInformations(const Entity &entity, const std::map<std::string, std::string> &informations, PositionSystem &movementSystem) {
+void MapLoader::extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &positionSystem) {
 
 
 

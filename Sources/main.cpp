@@ -22,12 +22,8 @@ int main() {
 
 	std::thread serverThread{[](){
 
-		const std::string mapPath{"Data/Map/NewMap"};
-
 		Server server;
-		server.startNewGame(1, sf::Vector2u{10, 10}, mapPath);
-		server.loadGame(mapPath);
-		server.runGame();
+		server.run(1, sf::Vector2u{10, 10});
 	}};
 
 
