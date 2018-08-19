@@ -63,18 +63,30 @@ int main() {
 
 	if(status == sf::Socket::Done) { 
 
-		std::cout << "Succesfully connected to server !" << std::endl; 
+		std::cout << "Succesfully connected to server !" << std::endl << "Enter command: " << std::endl; 
+		
+		bool haveToQuit{false};
+		std::string playerCommand, serverAnswer;
+
 		sf::Packet packet;
-		packet << "Sbla";
-		serverConnection.send(packet);
+
+		while(!haveToQuit) {
+
+			std::getline(std::cin, playerCommand);
+			packet << playerCommand;
+			serverConnection.send(packet);
+			packet.clear();
+			serverConnection.receive(packet);
+			packet >> serverAnswer;
+			std::cout << serverAnswer;
+
+			if(serverAnswer == "QUIT") { haveToQuit = true; }
+		}
 	}
 
 	else { std::cout << "Can't connect to server." << std::endl; }
 
-
 	if(wantToHost && serverThread.joinable()) { serverThread.join(); }
-
-	std::cout << "SBLA" << std::endl;
 	
 	return 0;
 

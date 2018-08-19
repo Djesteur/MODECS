@@ -17,26 +17,10 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 	m_players.reserve(nbPlayers);
 
-	bool gamePreparationFinished{false};
-
-	std::thread gamePreparation{[&](){
-
-		createNewGame(nbPlayers, mapSize, "Data/Map/NewMap");
-		loadGame("Data/Map/NewMap");
-
-		gamePreparationFinished = true;
-	}};
-
 	while(!m_gameStarted) {
 
 		newConnection(nbPlayers);
 		treatDatas(waitForDatas());
-	}
-
-	if(!gamePreparationFinished) { 
-
-		m_logWriter << "Wainting the preparation of the map.\n";
-		gamePreparation.join(); 
 	}
 
 	m_logWriter << "Begin of the game.\n";
@@ -118,7 +102,23 @@ unsigned int Server::waitForDatas() {
 	return socket;
 }
 
-void Server::treatDatas(const unsigned int socket) { if(m_players.size() == 2) { m_gameStarted = true; } }
+void Server::treatDatas(const unsigned int socket) { 
+
+	sf::Packet packet;
+	m_players[socket].second->receive(packet);
+
+	std::string command;
+	packet >> command;
+
+	if(command == "QUIT") {
+
+		packet << "QUIT";
+
+		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->send(); }
+
+		m_gameStarted = true;
+	}
+}
 
 
 
