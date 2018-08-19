@@ -72,15 +72,21 @@ int main() {
 
 		while(!haveToQuit) {
 
-			std::getline(std::cin, playerCommand);
+			playerCommand = "";
+
+			std::cin >> playerCommand;
 			packet << playerCommand;
 			serverConnection.send(packet);
+
 			packet.clear();
+
 			serverConnection.receive(packet);
 			packet >> serverAnswer;
 			std::cout << serverAnswer;
 
-			if(serverAnswer == "QUIT") { haveToQuit = true; }
+			packet.clear();
+
+			if(serverAnswer == "QUIT") {  std::cout << std::endl; haveToQuit = true; }
 		}
 	}
 

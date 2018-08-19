@@ -9,6 +9,8 @@ Server::Server():
 			m_logWriter << "ERROR: can't use the socket 43234"; 
 			//Erreur à gérer autrement
 		}
+
+		m_selector.add(m_listener);
 	}
 
 void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
@@ -17,11 +19,7 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 	m_players.reserve(nbPlayers);
 
-	while(!m_gameStarted) {
-
-		newConnection(nbPlayers);
-		treatDatas(waitForDatas());
-	}
+	while(!m_gameStarted) { communicate(nbPlayers); }
 
 	m_logWriter << "Begin of the game.\n";
 
@@ -33,19 +31,26 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 
 
-
-
-
-
-
-
 // Player connection functions
 
-void Server::newConnection(const unsigned int nbMaxPlayers) {
+void Server::communicate(const unsigned int nbMaxPlayers) {
+
+	m_selector.wait();
+
+	if(m_selector.isReady(m_listener)) { addPlayer(nbMaxPlayers); }
+
+	else {
+
+		for(unsigned int i{0}; i < m_players.size(); i++) {
+
+			if(m_selector.isReady(*(m_players[i].second))) { treatDatas(i); }
+		}
+	}
+}
+
+void Server::addPlayer(const unsigned int nbMaxPlayers) {
 
 	std::unique_ptr<sf::TcpSocket> newPlayer = std::make_unique<sf::TcpSocket>();
-	if(m_players.size() == 0) { m_logWriter << "Waiting first player...\n"; }
-	else { newPlayer->setBlocking(false); }
 
 	if(m_listener.accept(*newPlayer) == sf::Socket::Done) {
 
@@ -88,20 +93,6 @@ void Server::checkTimeOut() {}
 
 // General commnication functions
 
-unsigned int Server::waitForDatas() {
-
-	unsigned int socket{0};
-
-	m_selector.wait();
-
-	for(unsigned int i{0}; i < m_players.size(); i++) {
-
-		if(m_selector.isReady(*(m_players[i].second))) { socket = i; }
-	}
-
-	return socket;
-}
-
 void Server::treatDatas(const unsigned int socket) { 
 
 	sf::Packet packet;
@@ -110,13 +101,30 @@ void Server::treatDatas(const unsigned int socket) {
 	std::string command;
 	packet >> command;
 
+	m_logWriter << "Receive command from player " << m_players[socket].first << ": " << command << "\n";
+
+	packet.clear();
+
 	if(command == "QUIT") {
 
 		packet << "QUIT";
 
-		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->send(); }
+		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->send(packet); }
 
 		m_gameStarted = true;
+	}
+
+	else {
+
+		/* overloading << don't work ???
+		packet << "Server: sdf"  << " sbla " << 3;
+		packet << command << " sbla\n";*/
+
+		std::string messagetoSend{"Serveur: " + command + "\n"};
+		packet << messagetoSend;
+
+
+		m_players[socket].second->send(packet);
 	}
 }
 

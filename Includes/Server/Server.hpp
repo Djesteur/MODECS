@@ -33,12 +33,12 @@ class Server {
 
 		// Players connections functions
 
-		void newConnection(const unsigned int nbMaxPlayers);
+		void communicate(const unsigned int nbMaxPlayers);
+		void addPlayer(const unsigned int nbMaxPlayers);
 		void checkTimeOut();
 
 		// General commnication functions
 
-		unsigned int waitForDatas(); // Return the socket id wich send datas
 		void treatDatas(const unsigned int socket);
 
 		// Chat functions
