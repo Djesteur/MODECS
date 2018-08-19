@@ -4,6 +4,7 @@
 */
 
 #include <thread>
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
 
@@ -15,16 +16,72 @@
 
 #include "Server/Server.hpp"
 
+void startServer() {
+
+	Server server;
+	server.run(2, sf::Vector2u{10, 10});
+}
+
 int main() {
+
+
+	std::cout << "Welcome to MODECS v0.1" << std::endl;
+	std::cout << "Host game or join existing server (H/J) ?" << std::endl;
+
+	std::string playerAnswer;
+
+	while(playerAnswer != "H" && playerAnswer != "J") { playerAnswer = ""; std::cin >> playerAnswer; }
+
+	bool wantToHost{false}; 
+
+	std::thread serverThread;
+
+	std::string ipAdress;
+
+	if(playerAnswer == "H") {
+
+		wantToHost = true;
+		serverThread = std::thread{startServer};
+		ipAdress = "127.0.0.1";
+		std::this_thread::sleep_for(std::chrono::seconds(3)); // Let the server start and be ready for accecpting connections
+	}
+
+	else { 
+
+		std::cout << "Enter ip adress of the host: ";
+		std::cin >> ipAdress;
+	}
+
+	sf::TcpSocket serverConnection;
+
+	sf::Socket::Status status{serverConnection.connect(ipAdress, 43234)};
+
+	while(status != sf::Socket::Done) {
+
+		status = serverConnection.connect(ipAdress, 43234);
+	}
+
+	if(status == sf::Socket::Done) { 
+
+		std::cout << "Succesfully connected to server !" << std::endl; 
+		sf::Packet packet;
+		packet << "Sbla";
+		serverConnection.send(packet);
+	}
+
+	else { std::cout << "Can't connect to server." << std::endl; }
+
+
+	if(wantToHost && serverThread.joinable()) { serverThread.join(); }
+	
+	return 0;
+
+
+	/*
+
 
 	GraphicSystem system;
 	EntityKeeper keeper;
-
-	std::thread serverThread{[](){
-
-		Server server;
-		server.run(1, sf::Vector2u{10, 10});
-	}};
 
 
 	const unsigned int tileSize{128};
@@ -104,11 +161,7 @@ int main() {
 		window.setView(window.getDefaultView());
 
 		window.display();
-	}
-
-	if(serverThread.joinable()) { serverThread.join(); }
-	
-	return 0;
+	}*/
 }
 
 /* 

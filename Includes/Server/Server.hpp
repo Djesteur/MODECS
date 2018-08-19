@@ -7,8 +7,9 @@
 #define SERVER_HPP
 
 #include <thread>
+#include <memory>
 
-#include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #include "LogWriter.hpp"
 
@@ -30,21 +31,23 @@ class Server {
 
 		void run(const unsigned int nbPlayers, const sf::Vector2u mapSize);
 
-		//Players connections functions
+		// Players connections functions
 
-		bool waitingForConnetion() const;
-		void newConnection();
+		void newConnection(const unsigned int nbMaxPlayers);
 		void checkTimeOut();
+
+		// General commnication functions
+
+		unsigned int waitForDatas(); // Return the socket id wich send datas
+		void treatDatas(const unsigned int socket);
 
 		// Chat functions
 
-		unsigned int haveSomethingToSay() const;
 		void receiveAndSend();
 		void sendServerMessage(const std::string message);
 
 		// Command functions
 
-		unsigned int haveCommandToExecute() const;
 		bool canExecuteThisCommand(const std::vector<std::string> command); // Chercher meilleurs formats
 		void executeCommand(const std::vector<std::string> command);
 		void sendCommandToPlayers();
@@ -63,6 +66,11 @@ class Server {
 		EntityKeeper m_keeper;
 		MovementSystem m_movementSystem;
 
+		sf::TcpListener m_listener;
+		sf::SocketSelector m_selector;
+
+		std::vector<std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>>> m_players;
+
 		bool m_gameStarted;
 
 		/*
@@ -70,6 +78,7 @@ class Server {
 		 Players id start at 1 (0 mean no player want to execute a command/speak in chat)
 
 		<*/
+
 };
 
 
