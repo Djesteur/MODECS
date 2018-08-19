@@ -54,7 +54,7 @@ int main() {
 
 	sf::TcpSocket serverConnection;
 
-	sf::Socket::Status status{serverConnection.connect(ipAdress, 43234)};
+	sf::Socket::Status status{serverConnection.connect(ipAdress, 43234, sf::seconds(5.f))};
 
 	while(status != sf::Socket::Done) {
 
@@ -73,6 +73,8 @@ int main() {
 
 
 	if(wantToHost && serverThread.joinable()) { serverThread.join(); }
+
+	std::cout << "SBLA" << std::endl;
 	
 	return 0;
 

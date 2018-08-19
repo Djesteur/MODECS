@@ -41,6 +41,8 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 	m_logWriter << "Begin of the game.\n";
 
+	for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->disconnect(); }
+	m_listener.close();
 }
 
 
