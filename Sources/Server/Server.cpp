@@ -2,7 +2,8 @@
 
 Server::Server(): 
 	m_logWriter{"Output/Server/Server"},
-	m_gameStarted{false} {
+	m_gameStarted{false},
+	m_mapIsReady{false} {
 
 		if(m_listener.listen(43234) != sf::Socket::Done) {
 
@@ -16,6 +17,13 @@ Server::Server():
 void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 	m_logWriter << "Server Start\n";
+
+	std::thread gamePreparation{[&](){
+
+		createNewMap(nbPlayers, mapSize, "Data/Map/NewMap");
+		prepareMapForPlayers("Data/Map/NewMap");
+		m_mapIsReady = true;
+	}};
 
 	m_players.reserve(nbPlayers);
 
@@ -105,13 +113,34 @@ void Server::treatDatas(const unsigned int socket) {
 
 	packet.clear();
 
-	if(command == "QUIT") {
+	if(command == "Stop") {
 
-		packet << "QUIT";
+		packet << "Stop";
 
 		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->send(packet); }
 
 		m_gameStarted = true;
+	}
+
+	else if(command == "Download Map") {
+
+		if(m_mapIsReady) {
+
+			packet << "Downloading";
+			m_players[socket].second->send(packet);
+
+			packet.clear();
+			packet << m_loadedMap;
+			m_players[socket].second->send(packet);
+		}
+
+		else {
+
+			packet << "Map isn't redy yet.\n";
+			m_players[socket].second->send(packet);
+		}
+
+		
 	}
 
 	else {
@@ -120,9 +149,8 @@ void Server::treatDatas(const unsigned int socket) {
 		packet << "Server: sdf"  << " sbla " << 3;
 		packet << command << " sbla\n";*/
 
-		std::string messagetoSend{"Serveur: " + command + "\n"};
+		std::string messagetoSend{"Server: Unknow command"};
 		packet << messagetoSend;
-
 
 		m_players[socket].second->send(packet);
 	}
@@ -180,21 +208,31 @@ void Server::sendCommandToPlayers() {}
 
 
 
-
-
-
-
-
-
 // Map functions
 
-bool Server::createNewGame(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path) {
+
+void Server::prepareMapForPlayers(const std::string mapPath) {
+
+	std::ifstream map{mapPath};
+
+	if(!map) { m_logWriter << "ERROR: can't open map for players.\n"; }
+	else {
+
+		std::string currentData;
+		m_loadedMap = "";
+
+		while(std::getline(map, currentData)) { m_loadedMap += currentData + "\n"; }
+	}
+}
+
+
+void Server::createNewMap(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path) {
 
 	MapCreator creator;
 	creator.create(mapSize, path);
 }
 
-bool Server::loadGame(const std::string path) {
+void Server::loadGame(const std::string path) {
 
 	/*MapLoader loader;
 	loader.load(path, m_keeper, m_movementSystem);*/

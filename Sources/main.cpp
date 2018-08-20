@@ -5,6 +5,7 @@
 
 #include <thread>
 #include <chrono>
+#include <fstream>
 
 #include <SFML/Graphics.hpp>
 
@@ -86,7 +87,19 @@ int main() {
 
 			packet.clear();
 
-			if(serverAnswer == "QUIT") {  std::cout << std::endl; haveToQuit = true; }
+			if(serverAnswer == "Stop") {  std::cout << std::endl; haveToQuit = true; }
+			if(serverAnswer == "Downloading") {
+
+				serverConnection.receive(packet);
+				std::string loadedMap;
+				packet >> loadedMap;
+
+				std::ofstream writeMap{"Data/Map/NewMapDownloaded"};
+				writeMap << loadedMap;
+				writeMap.close();
+
+				std::cout << "Done" << std::endl;
+			}
 		}
 	}
 

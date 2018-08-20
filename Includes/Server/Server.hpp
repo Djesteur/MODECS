@@ -8,6 +8,7 @@
 
 #include <thread>
 #include <memory>
+#include <fstream>
 
 #include <SFML/Network.hpp>
 
@@ -54,10 +55,9 @@ class Server {
 
 		// Map functions
 
-		bool createNewGame(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path);
-		bool loadGame(const std::string path);
-
-		void sendMapToPlayers();
+		void prepareMapForPlayers(const std::string mapPath);
+		void createNewMap(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path);
+		void loadGame(const std::string path);
 
 	private:
 
@@ -72,6 +72,9 @@ class Server {
 		std::vector<std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>>> m_players;
 
 		bool m_gameStarted;
+		bool m_mapIsReady;
+
+		std::string m_loadedMap;
 
 		/*
 
