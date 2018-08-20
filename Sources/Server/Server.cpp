@@ -149,7 +149,7 @@ void Server::treatDatas(const unsigned int socket) {
 		packet << "Server: sdf"  << " sbla " << 3;
 		packet << command << " sbla\n";*/
 
-		std::string messagetoSend{"Server: Unknow command"};
+		std::string messagetoSend{"Server: Unknow command" + command + "\n"};
 		packet << messagetoSend;
 
 		m_players[socket].second->send(packet);
