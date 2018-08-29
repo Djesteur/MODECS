@@ -29,7 +29,9 @@ void MapCreator::create(const sf::Vector2u mapSize, const std::string path) {
 					mapFile << "PositionX!" << i%mapSize.x << std::endl;
 					mapFile << "PositionY!" << i/mapSize.x << std::endl;
 
-					mapFile << "!!!" << std::endl;
+					mapFile << "!!!";
+
+					if(i != mapSize.x*mapSize.y - 1) { mapFile << std::endl; }
 				}
 
 				m_logWriter << mapSize.x*mapSize.y << " hexagon tiles added.\n";

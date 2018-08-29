@@ -1,1 +1,88 @@
+NewEntity ------- 0xbd8a80 ID: 1
+CopyConstructor - 0xbd8ac0 (ID: 1 Adress: 12421760)
+NeNewEntity ------0x0x10ca ID I2
+CopCopyConstructor0xb0x10c (ID (2 Adr Adre12421760)
+NewENewEntity ----0xbd0x10 ID: 3
+CopyCCopyConstruct0xbd80x1 (ID: 3 Adres Ad12422017)
+NewEntNewEntity --0xbd8c0x ID: 4
+CopyConCopyConstru0xbd8c40 (ID: 4 Adress: 12422144)
+NewEntitNewEntity 0xbd8c80 ID: 5
+CopyConstCopyConst0xbd8cc0 (ID: 5 Adress: 12422272)
+NewEntity NewEntit0xbd8d00 ID: 6
+CopyConstruCopyCon0xbd8d40 (ID: 6 Adress: 12422400)
+NewEntity --NewEnt0xbd8d80 ID: 7
+CopyConstructCopyC0xbd8dc0 (ID: 7 Adress: 12422528)
+NewEntity ----NewE0xbd8e00 ID: 8
+CopyConstructorCop0xbd8e40 (ID: 8 Adress: 12422656)
+NewEntity ------Ne0xbd8e80 ID: 9
+CopyConstructor -C0xbd8ec0 (ID: 9 Adress: 12422784)
+Destroying ------ Destroyi ID: 1
+Destroying ------ 0Destroy ID: 2
+Destroying ------ 0xDestro ID: 3
+Destroying ------ 0xbDestr ID: 4
+Destroying ------ 0xbdDest ID: 5
+Destroying ------ 0xbd8Des ID: 6
+Destroying ------ 0xbd8dDe ID: 7
+Destroying ------ 0xbd8e0D ID: 8
+Destroying ------ 0xbd8e80 ID: 9
+Destroying ------ 0xbd8ac0 (ID: 1 Adress: 0xbd8ac0)
+Destroying ------ 0xbd8b40 (ID: 2 Adress: 0xbd8b40)
+Destroying ------ 0xbd8bc0 (ID: 3 Adress: 0xbd8bc0)
+Destroying ------ 0xbd8c40 (ID: 4 Adress: 0xbd8c40)
+Destroying ---4 Adress: 0x10cade5 
+Destroying ----)
+Destroying -----5 Adress: 0x10ca6 Ad
+Destroying --)
+Destroying ------ 0 Adress (0x107 Adre
+Destroying )
+Destroying ------ 0xb Adre (ID0x8 Adress
+Destroyin)
+Destroying ------ 0xbd8 Ad (ID: 9 Adress: 0Destroy)
 End of entity system.
+: 9 Adress: 0x10cb060)
+End of entity system.
+ss: 139705354074272)
+NewEntity ------- 0x7f0fb000bba0 ID: 11
+CopyConstructor - 0x7f0fb000baa0 (ID: 11 Adress: 139705354075040)
+NewEntity ------- 0x7f0fb000bb20 ID: 12
+CopyConstructor - 0x7f0fb000ba20 (ID: 12 Adress: 139705354074912)
+NewEntity ------- 0x7f0fb0009ab0 ID: 13
+CopyConstructor - 0x7f0fb0009af0 (ID: 13 Adress: 139705354066608)
+NewEntity ------- 0x7f0fb0009b30 ID: 14
+CopyConstructor - 0x7f0fb0009b70 (ID: 14 Adress: 139705354066736)
+NewEntity ------- 0x7f0fb0009bb0 ID: 15
+CopyConstructor - 0x7f0fb0009bf0 (ID: 15 Adress: 139705354066864)
+NewEntity ------- 0x7f0fb0009c30 ID: 16
+CopyConstructor - 0x7f0fb0009c70 (ID: 16 Adress: 139705354066992)
+NewEntity ------- 0x7f0fb0009cb0 ID: 17
+CopyConstructor - 0x7f0fb0009cf0 (ID: 17 Adress: 139705354067120)
+NewEntity ------- 0x7f0fb0009d30 ID: 18
+CopyConstructor - 0x7f0fb0009d70 (ID: 18 Adress: 139705354067248)
+Destroying ------ 0x7f0fb000b820 (ID: 10 Adress: 0x7f0fb000b820)
+Destroying ------ 0x7f0fb000baa0 (ID: 11 Adress: 0x7f0fb000baa0)
+Destroying ------ 0x7f0fb000ba20 (ID: 12 Adress: 0x7f0fb000ba20)
+Destroying ------ 0x7f0fb0009af0 (ID: 13 Adress: 0x7f0fb0009af0)
+Destroying ------ 0x7f0fb0009b70 (ID: 14 Adress: 0x7f0fb0009b70)
+Destroying ------ 0x7f0fb0009bf0 (ID: 15 Adress: 0x7f0fb0009bf0)
+Destroying ------ 0x7f0fb0009c70 (ID: 16 Adress: 0x7f0fb0009c70)
+Destroying ------ 0x7f0fb0009cf0 (ID: 17 Adress: 0x7f0fb0009cf0)
+Destroying ------ 0x7f0fb0009d70 (ID: 18 Adress: 0x7f0fb0009d70)
+End of entity system.
+Destroying ------ 0x7f0fb000b7e0 ID: 1
+Destroying ------ 0x7f0fb000b860 ID: 2
+Destroying ------ 0x7f0fb000b8e0 ID: 3
+Destroying ------ 0x7f0fb000b960 ID: 4
+Destroying ------ 0x7f0fb000b9e0 ID: 5
+Destroying ------ 0x7f0fb000ba60 ID: 6
+Destroying ------ 0x7f0fb000bae0 ID: 7
+Destroying ------ 0x7f0fb000bb60 ID: 8
+Destroying ------ 0x7f0fb000bbe0 ID: 9
+Destroying ------ 0x7f0fb000b8a0 ID: 10
+Destroying ------ 0x7f0fb000bba0 ID: 11
+Destroying ------ 0x7f0fb000bb20 ID: 12
+Destroying ------ 0x7f0fb0009ab0 ID: 13
+Destroying ------ 0x7f0fb0009b30 ID: 14
+Destroying ------ 0x7f0fb0009bb0 ID: 15
+Destroying ------ 0x7f0fb0009c30 ID: 16
+Destroying ------ 0x7f0fb0009cb0 ID: 17
+Destroying ------ 0x7f0fb0009d30 ID: 18

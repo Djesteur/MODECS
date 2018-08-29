@@ -20,8 +20,6 @@
 
 #include "LogWriter.hpp"
 
-class PositionSystem;
-
 class MapLoader {
 
 	public:
@@ -30,7 +28,9 @@ class MapLoader {
 		MapLoader(const Entity &) = delete;
 		MapLoader &operator=(const Entity &) = delete;
 
-		std::list<Entity> load(const std::string mapPath, EntityKeeper &keeper, MovementSystem &movementSystem);
+		std::list<Entity> loadGame(const std::string mapPath, EntityKeeper &keeper, MovementSystem &movementSystem);
+		std::list<Entity> loadGraphics(const std::string mapPath, EntityKeeper &keeper, GraphicSystem &graphicSystem);
+		std::list<Entity> loadSounds(const std::string mapPath, EntityKeeper &keeper);
 
 	private:
 

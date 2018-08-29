@@ -20,28 +20,21 @@
 void startServer() {
 
 	Server server;
-	server.run(2, sf::Vector2u{10, 10});
+	server.run(2, sf::Vector2u{3, 3});
 }
 
-int main() {
+bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThread) {
 
-
-	std::cout << "Welcome to MODECS v0.1" << std::endl;
 	std::cout << "Host game or join existing server (H/J) ?" << std::endl;
 
 	std::string playerAnswer;
 
 	while(playerAnswer != "H" && playerAnswer != "J") { playerAnswer = ""; std::cin >> playerAnswer; }
 
-	bool wantToHost{false}; 
-
-	std::thread serverThread;
-
 	std::string ipAdress;
 
 	if(playerAnswer == "H") {
 
-		wantToHost = true;
 		serverThread = std::thread{startServer};
 		ipAdress = "127.0.0.1";
 		std::this_thread::sleep_for(std::chrono::seconds(3)); // Let the server start and be ready for accecpting connections
@@ -53,64 +46,102 @@ int main() {
 		std::cin >> ipAdress;
 	}
 
-	sf::TcpSocket serverConnection;
+	sf::Socket::Status status{serverConnection.connect(ipAdress, 43234, sf::seconds(2.f))};
 
-	sf::Socket::Status status{serverConnection.connect(ipAdress, 43234, sf::seconds(5.f))};
+	//If error on this socket, try the second
 
-	while(status != sf::Socket::Done) {
+	if(status != sf::Socket::Done) { 
 
-		status = serverConnection.connect(ipAdress, 43234);
+		std::cout << "Can't connect with socket 43234, trying with 23432 ..." << std::endl;
+
+		status = serverConnection.connect(ipAdress, 23432, sf::seconds(2.f)); 
 	}
 
-	if(status == sf::Socket::Done) { 
+	if(status == sf::Socket::Done) { return true; }
 
-		std::cout << "Succesfully connected to server !" << std::endl << "Enter command: " << std::endl; 
+	
+	return false;
+}
+
+int main() {
+
+	std::cout << "Welcome to MODECS v0.1" << std::endl;
+
+	sf::TcpSocket serverConnection;
+	std::thread serverThread;
+
+	EntityKeeper keeper;
+	MovementSystem movementSystem;
+	MapLoader loader;
+
+	if(connectionToServer(serverConnection, serverThread)) {
+
+		std::cout << "Succesfully connected to server ! Waiting server orders." << std::endl; 
 		
-		bool haveToQuit{false};
-		std::string playerCommand, serverAnswer;
+		bool startGame{false};
+		std::string serverOrder;
 
 		sf::Packet packet;
 
-		while(!haveToQuit) {
-
-			playerCommand = "";
-
-			std::cin >> playerCommand;
-			packet << playerCommand;
-			serverConnection.send(packet);
-
-			packet.clear();
+		while(!startGame) {
 
 			serverConnection.receive(packet);
-			packet >> serverAnswer;
-			std::cout << serverAnswer;
+			packet >> serverOrder;
 
 			packet.clear();
 
-			if(serverAnswer == "Stop") {  std::cout << std::endl; haveToQuit = true; }
-			if(serverAnswer == "Downloading") {
+			if(serverOrder == "Downloading") {
+
+				std::cout << "Downloading map..." << std::endl;
 
 				serverConnection.receive(packet);
 				std::string loadedMap;
 				packet >> loadedMap;
+				packet.clear();
 
 				std::ofstream writeMap{"Data/Map/NewMapDownloaded"};
 				writeMap << loadedMap;
 				writeMap.close();
 
-				std::cout << "Done" << std::endl;
+				packet << "Done";
+				serverConnection.send(packet);
+				packet.clear();
+
+				std::cout << "Done, waiting others players." << std::endl;
+			}
+
+			if(serverOrder == "Load") {
+
+				std::cout << "Loading map ..." << std::endl;
+
+				loader.loadGame("Data/Map/NewMapDownloaded", keeper, movementSystem);
+				std::cout << "LOO" << std::endl;
+				packet << "Done";
+				serverConnection.send(packet);
+				packet.clear();
+
+				std::cout << "Done, waiting others players." << std::endl;
+			}
+
+			if(serverOrder == "Start") {  
+
+				std::cout << "Game start" << std::endl;
+				startGame = true; 
 			}
 		}
+
+		
 	}
 
-	else { std::cout << "Can't connect to server." << std::endl; }
+	else { std::cout << "Can't connect to the server." << std::endl; }
 
-	if(wantToHost && serverThread.joinable()) { serverThread.join(); }
+	if(serverThread.joinable()) { serverThread.join(); }
 	
 	return 0;
+}
 
 
-	/*
+/*
 
 
 	GraphicSystem system;
@@ -195,11 +226,3 @@ int main() {
 
 		window.display();
 	}*/
-}
-
-/* 
-	To do:
-
-		- Optimiser création de map (possible ?)
-		- Recherche dichotomique des entités (graphic et keeper) (pas pour le moment)
-*/

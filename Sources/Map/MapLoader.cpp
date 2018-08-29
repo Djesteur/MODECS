@@ -2,7 +2,7 @@
 
 MapLoader::MapLoader(): m_logWriter{"Output/Map/MapLoader"} {}
 
-std::list<Entity> MapLoader::load(const std::string mapPath, EntityKeeper &keeper, MovementSystem &movementSystem) {
+std::list<Entity> MapLoader::loadGame(const std::string mapPath, EntityKeeper &keeper, MovementSystem &movementSystem) {
 
 	const std::string endOfTile{"!!!"};
 	std::list<Entity> tiles;
@@ -23,22 +23,24 @@ std::list<Entity> MapLoader::load(const std::string mapPath, EntityKeeper &keepe
 		while(!tilesFile.eof()) {
 
 			std::getline(tilesFile, currentData);
+			currentLine++;
 
 			while(currentData != endOfTile) {
 
 				newInformations = splitDatas(currentData, '!');
 
-				if(newInformations.size() != 2) { throw "Invalid information format"; }
+				if(newInformations.size() != 2) { throw "Invalid information format \"" + currentData + "\""; }
 				else { tileInformations.insert(std::make_pair(newInformations[0], newInformations[1])); }
 
 				if(tilesFile.eof()) { throw "Invalid file format"; }
+
+				std::getline(tilesFile, currentData);
+				currentLine++;
 			}
 
 			tiles.push_back(keeper.newEntity());
 
 			extractMovementInformations(tiles.back(), tileInformations, movementSystem);
-
-			currentLine++;
 		}
 
 		if(currentData != endOfTile) { m_logWriter << "WARNING: the tile file have a bad end line.\n"; }
@@ -57,8 +59,24 @@ std::list<Entity> MapLoader::load(const std::string mapPath, EntityKeeper &keepe
 		tiles.clear();
 	}
 
+	catch(const char *error) { 
+
+		m_logWriter << "ERROR: " << error << " while loading map at line " << currentLine << ".\n";
+
+		for(Entity &currentEntity: tiles) { 
+
+			//movementSystem.deleteEntity(currentEntity);
+			keeper.deleteEntity(currentEntity);
+		}
+
+		tiles.clear();
+	}
+
 	return tiles;
 }
+
+std::list<Entity> MapLoader::loadGraphics(const std::string mapPath, EntityKeeper &keeper, GraphicSystem &graphicSystem) { std::list<Entity> tiles; return tiles; }
+std::list<Entity> MapLoader::loadSounds(const std::string mapPath, EntityKeeper &keeper) { std::list<Entity> tiles; return tiles; }
 
 /*
 

@@ -47,6 +47,4 @@ LogWriter &operator<<(LogWriter &writer, const T data) {
 	return writer;
 }
 
-
-
 #endif

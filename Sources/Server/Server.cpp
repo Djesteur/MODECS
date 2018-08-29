@@ -3,12 +3,18 @@
 Server::Server(): 
 	m_logWriter{"Output/Server/Server"},
 	m_gameStarted{false},
-	m_mapIsReady{false} {
+	m_canStartServer{true} {
 
 		if(m_listener.listen(43234) != sf::Socket::Done) {
 
-			m_logWriter << "ERROR: can't use the socket 43234"; 
+			m_logWriter << "WARNING: can't use the socket 43234\n"; 
 			//Erreur à gérer autrement
+
+			if(m_listener.listen(23432) != sf::Socket::Done) { 
+
+				m_logWriter << "ERROR: can't use the socket 23432\n"; 
+				m_canStartServer = false;
+			}
 		}
 
 		m_selector.add(m_listener);
@@ -16,44 +22,74 @@ Server::Server():
 
 void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
-	m_logWriter << "Server Start\n";
+	if(m_canStartServer) {
 
-	std::thread gamePreparation{[&](){
+		m_logWriter << "Server Start\n";
 
 		createNewMap(nbPlayers, mapSize, "Data/Map/NewMap");
+		loadGame("Data/Map/NewMap");
 		prepareMapForPlayers("Data/Map/NewMap");
-		m_mapIsReady = true;
-	}};
 
-	m_players.reserve(nbPlayers);
+		m_players.reserve(nbPlayers);
 
-	while(!m_gameStarted) { communicate(nbPlayers); }
+		while(!m_gameStarted) { waitConnections(nbPlayers); }
 
-	m_logWriter << "Begin of the game.\n";
+		m_logWriter << "Begin of the game.\n";
 
-	for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->disconnect(); }
-	m_listener.close();
+		playersLoadGame();
+		runGame();
+
+		m_logWriter << "End of the game.\n";
+
+		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->disconnect(); }
+		m_listener.close();
+	}
 }
 
 
+// Game functions
 
+void Server::runGame() {}
 
+// Orders functions
+
+void Server::sendForAll(const std::string message) {
+
+	sf::Packet packet;
+	packet << message;
+
+	for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &currentPlayer: m_players) { currentPlayer.second->send(packet); }
+}
+
+std::pair<unsigned int, std::string> Server::waitMessage() {
+
+	m_selector.wait();
+
+	std::pair<unsigned int, std::string> result;
+	sf::Packet packet;
+
+	for(unsigned int i{0}; i < m_players.size(); i++) {
+
+		if(m_selector.isReady(*(m_players[i].second))) {
+
+			result.first = i + 1; //For id
+			m_players[i].second->receive(packet);
+			packet >> result.second;
+
+			return result;
+		}
+	}
+
+	return std::make_pair(0, "");
+}
 
 // Player connection functions
 
-void Server::communicate(const unsigned int nbMaxPlayers) {
+void Server::waitConnections(const unsigned int nbMaxPlayers) {
 
 	m_selector.wait();
 
 	if(m_selector.isReady(m_listener)) { addPlayer(nbMaxPlayers); }
-
-	else {
-
-		for(unsigned int i{0}; i < m_players.size(); i++) {
-
-			if(m_selector.isReady(*(m_players[i].second))) { treatDatas(i); }
-		}
-	}
 }
 
 void Server::addPlayer(const unsigned int nbMaxPlayers) {
@@ -88,121 +124,13 @@ void Server::addPlayer(const unsigned int nbMaxPlayers) {
 			m_selector.add(*(m_players.back().second));
 
 			m_logWriter << "New player connected with id " << newPlayerNumber << "\n";
+
+			if(m_players.size() == nbMaxPlayers) { m_gameStarted = true; }
 		}
 	}
 }
 
 void Server::checkTimeOut() {}
-
-
-
-
-
-
-// General commnication functions
-
-void Server::treatDatas(const unsigned int socket) { 
-
-	sf::Packet packet;
-	m_players[socket].second->receive(packet);
-
-	std::string command;
-	packet >> command;
-
-	m_logWriter << "Receive command from player " << m_players[socket].first << ": " << command << "\n";
-
-	packet.clear();
-
-	if(command == "Stop") {
-
-		packet << "Stop";
-
-		for(std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>> &socket: m_players) { socket.second->send(packet); }
-
-		m_gameStarted = true;
-	}
-
-	else if(command == "Download Map") {
-
-		if(m_mapIsReady) {
-
-			packet << "Downloading";
-			m_players[socket].second->send(packet);
-
-			packet.clear();
-			packet << m_loadedMap;
-			m_players[socket].second->send(packet);
-		}
-
-		else {
-
-			packet << "Map isn't redy yet.\n";
-			m_players[socket].second->send(packet);
-		}
-
-		
-	}
-
-	else {
-
-		/* overloading << don't work ???
-		packet << "Server: sdf"  << " sbla " << 3;
-		packet << command << " sbla\n";*/
-
-		std::string messagetoSend{"Server: Unknow command" + command + "\n"};
-		packet << messagetoSend;
-
-		m_players[socket].second->send(packet);
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-// Chat function
-
-void Server::receiveAndSend() {}
-
-void Server::sendServerMessage(const std::string message) {}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Command functions
-
-bool Server::canExecuteThisCommand(const std::vector<std::string> command) { return false; }
-
-void Server::sendCommandToPlayers() {}
-
-
-
-
-
-
-
 
 
 
@@ -225,6 +153,51 @@ void Server::prepareMapForPlayers(const std::string mapPath) {
 	}
 }
 
+void Server::playersLoadGame() {
+
+	m_logWriter << "Players downloading the map ...\n";
+
+	sendForAll("Downloading");
+	sendForAll(m_loadedMap);
+
+	unsigned int nbDone{0};
+	std::pair<unsigned int, std::string> result;
+
+	while(nbDone != m_players.size()) {
+
+		result = waitMessage();
+
+		if(result.first != 0 && result.second == "Done") { 
+
+			nbDone++; 
+			m_logWriter << "Player " << result.first << " downloaded the map.\n";
+		}
+	}
+
+	m_logWriter << "Done\nPlayers loading the map ...\n";
+
+	sendForAll("Load");
+
+	loadGame("Data/Map/NewMap");
+
+	nbDone = 0;
+
+	while(nbDone != m_players.size()) {
+
+		result = waitMessage();
+
+		if(result.first != 0 && result.second == "Done") { 
+
+			nbDone++; 
+			m_logWriter << "Player " << result.first << " loaded the map.\n";
+		}
+	}
+
+	sendForAll("Start");
+
+	m_logWriter << "Done\n";
+}
+
 
 void Server::createNewMap(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path) {
 
@@ -234,6 +207,6 @@ void Server::createNewMap(const unsigned int nbPlayers, const sf::Vector2u mapSi
 
 void Server::loadGame(const std::string path) {
 
-	/*MapLoader loader;
-	loader.load(path, m_keeper, m_movementSystem);*/
+	MapLoader loader;
+	loader.loadGame(path, m_keeper, m_movementSystem);
 }

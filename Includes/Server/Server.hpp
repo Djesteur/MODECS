@@ -32,34 +32,30 @@ class Server {
 
 		void run(const unsigned int nbPlayers, const sf::Vector2u mapSize);
 
+	private:
+
+		// Game functions
+
+		void runGame();
+
+		// Orders functions
+
+		void sendForAll(const std::string message);
+		std::pair<unsigned int, std::string> waitMessage();
+
 		// Players connections functions
 
-		void communicate(const unsigned int nbMaxPlayers);
+		void waitConnections(const unsigned int nbMaxPlayers);
 		void addPlayer(const unsigned int nbMaxPlayers);
 		void checkTimeOut();
-
-		// General commnication functions
-
-		void treatDatas(const unsigned int socket);
-
-		// Chat functions
-
-		void receiveAndSend();
-		void sendServerMessage(const std::string message);
-
-		// Command functions
-
-		bool canExecuteThisCommand(const std::vector<std::string> command); // Chercher meilleurs formats
-		void executeCommand(const std::vector<std::string> command);
-		void sendCommandToPlayers();
 
 		// Map functions
 
 		void prepareMapForPlayers(const std::string mapPath);
+		void playersLoadGame();
+
 		void createNewMap(const unsigned int nbPlayers, const sf::Vector2u mapSize, const std::string path);
 		void loadGame(const std::string path);
-
-	private:
 
 		LogWriter m_logWriter;
 
@@ -72,7 +68,7 @@ class Server {
 		std::vector<std::pair<unsigned int, std::unique_ptr<sf::TcpSocket>>> m_players;
 
 		bool m_gameStarted;
-		bool m_mapIsReady;
+		bool m_canStartServer;
 
 		std::string m_loadedMap;
 
