@@ -40,7 +40,7 @@ class Server {
 
 		// Orders functions
 
-		void sendForAll(const std::string message);
+		void sendToAll(const std::string message);
 		std::pair<unsigned int, std::string> waitMessage();
 
 		// Players connections functions

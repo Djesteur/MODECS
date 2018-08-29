@@ -9,6 +9,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <list>
 
 #include "Entity/EntityKeeper.hpp"
 
@@ -34,14 +35,15 @@ class MapLoader {
 
 	private:
 
-		//std::map<std::string, Entity> constructExampleTiles(const std::string path, EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize);
+		std::map<std::string, Entity> constructExampleTiles(const std::string path, EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize);
 		
 		void extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &positionSystem);
-		
-		/*std::map<std::string, std::string> constructHexa(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size);
+		void extractGraphicInformations(const Entity &entity, const std::map<std::string, std::string> &informations, std::map<std::string, Entity> exampleTiles, GraphicSystem &graphicSystem);
+
+		std::map<std::string, std::string> constructHexa(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size);
 		std::map<std::string, std::string> constructSquare(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size);
 		std::map<std::string, std::string> constructTriangle(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size);
-		*/
+		
 		LogWriter m_logWriter;
 };
 

@@ -49,11 +49,29 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 // Game functions
 
-void Server::runGame() {}
+void Server::runGame() {
+
+	bool gameIsFinished{false};
+
+	while(!gameIsFinished) {
+
+		std::pair<unsigned int, std::string> result = waitMessage();
+
+		if(result.first != 0) {
+
+			if(result.second == "StopGame") {
+
+				m_logWriter << "Player " << result.first << " stopped the game.\n";
+				sendToAll("StopGame");
+				gameIsFinished = true;
+			}
+		}
+	}
+}
 
 // Orders functions
 
-void Server::sendForAll(const std::string message) {
+void Server::sendToAll(const std::string message) {
 
 	sf::Packet packet;
 	packet << message;
@@ -149,7 +167,12 @@ void Server::prepareMapForPlayers(const std::string mapPath) {
 		std::string currentData;
 		m_loadedMap = "";
 
-		while(std::getline(map, currentData)) { m_loadedMap += currentData + "\n"; }
+		while(std::getline(map, currentData)) { 
+
+			m_loadedMap += currentData;
+			if(!map.eof()) { m_loadedMap +=  "\n"; }
+
+		}
 	}
 }
 
@@ -157,8 +180,8 @@ void Server::playersLoadGame() {
 
 	m_logWriter << "Players downloading the map ...\n";
 
-	sendForAll("Downloading");
-	sendForAll(m_loadedMap);
+	sendToAll("Downloading");
+	sendToAll(m_loadedMap);
 
 	unsigned int nbDone{0};
 	std::pair<unsigned int, std::string> result;
@@ -176,7 +199,7 @@ void Server::playersLoadGame() {
 
 	m_logWriter << "Done\nPlayers loading the map ...\n";
 
-	sendForAll("Load");
+	sendToAll("Load");
 
 	loadGame("Data/Map/NewMap");
 
@@ -193,7 +216,7 @@ void Server::playersLoadGame() {
 		}
 	}
 
-	sendForAll("Start");
+	sendToAll("Start");
 
 	m_logWriter << "Done\n";
 }

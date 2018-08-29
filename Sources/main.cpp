@@ -20,7 +20,7 @@
 void startServer() {
 
 	Server server;
-	server.run(2, sf::Vector2u{3, 3});
+	server.run(3, sf::Vector2u{3, 3});
 }
 
 bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThread) {
@@ -63,6 +63,111 @@ bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThre
 	return false;
 }
 
+void play(sf::TcpSocket &serverConnection, EntityKeeper &keeper, MovementSystem &movementSystem, GraphicSystem &graphicSystem) {
+
+	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS v0.1"};
+	window.setVerticalSyncEnabled(true);
+	
+	sf::Event event;
+	sf::View currentView{sf::Vector2f{0, 0}, sf::Vector2f{1280, 720}};
+
+	bool movingMouseMap{false};
+	float moveView{1.f};
+
+	const unsigned int minZoom{1}, maxZoom{11};
+	unsigned int currentZoom{11};
+	sf::Vector2i oldMousePosition, newMousePosition;
+
+	bool haveToStop{false};
+
+	sf::Packet packet;
+	serverConnection.setBlocking(false);
+
+	while(!haveToStop) {
+
+		//Event
+
+		while(window.pollEvent(event)) {
+
+			if(event.type == sf::Event::Closed) { window.close(); }
+
+			if(event.type == sf::Event::MouseWheelScrolled) {
+
+				if(event.mouseWheelScroll.delta > 0) { 
+
+					if(currentZoom < maxZoom) {
+
+						currentView.zoom(0.8f); 
+						moveView *= 0.8f; 
+						currentZoom++;
+					}
+				}
+
+				if(event.mouseWheelScroll.delta < 0) { 
+
+					if(currentZoom > minZoom) {
+
+						currentView.zoom(1.25f); 
+						moveView *= 1.25f; 
+						currentZoom--;
+					}
+				}
+			}
+
+			if(event.type == sf::Event::MouseButtonPressed) {
+
+				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = true; oldMousePosition = sf::Mouse::getPosition(); } 
+			}
+
+			if(event.type == sf::Event::MouseButtonReleased) {
+
+				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = false; } 
+			}
+
+			if(event.type == sf::Event::Closed) {
+
+				packet << "StopGame";
+				serverConnection.send(packet);
+				packet.clear();
+			}
+		}
+
+		//Update
+
+		// Get server information
+
+		if(serverConnection.receive(packet) == sf::Socket::Status::Done) {
+
+			std::string serverOrder;
+			packet >> serverOrder;
+			packet.clear();
+
+			std::cout << serverOrder << std::endl;
+
+			if(serverOrder == "StopGame") { haveToStop = true; }
+		}
+
+		graphicSystem.update(1);
+
+		if(movingMouseMap) {
+
+			newMousePosition = sf::Mouse::getPosition();
+			currentView.move((oldMousePosition.x - newMousePosition.x)*moveView, (oldMousePosition.y - newMousePosition.y)*moveView);
+			oldMousePosition = newMousePosition;
+		}
+
+		//Draw
+
+		window.clear(sf::Color::Black);
+
+		window.setView(currentView);
+		graphicSystem.drawComponents(window);
+		window.setView(window.getDefaultView());
+
+		window.display();
+	}
+}
+
 int main() {
 
 	std::cout << "Welcome to MODECS v0.1" << std::endl;
@@ -72,6 +177,7 @@ int main() {
 
 	EntityKeeper keeper;
 	MovementSystem movementSystem;
+	GraphicSystem graphicSystem;
 	MapLoader loader;
 
 	if(connectionToServer(serverConnection, serverThread)) {
@@ -115,7 +221,7 @@ int main() {
 				std::cout << "Loading map ..." << std::endl;
 
 				loader.loadGame("Data/Map/NewMapDownloaded", keeper, movementSystem);
-				std::cout << "LOO" << std::endl;
+				loader.loadGraphics("Data/Map/NewMapDownloaded", keeper, graphicSystem);
 				packet << "Done";
 				serverConnection.send(packet);
 				packet.clear();
@@ -130,7 +236,7 @@ int main() {
 			}
 		}
 
-		
+		play(serverConnection, keeper, movementSystem, graphicSystem);
 	}
 
 	else { std::cout << "Can't connect to the server." << std::endl; }
@@ -139,90 +245,3 @@ int main() {
 	
 	return 0;
 }
-
-
-/*
-
-
-	GraphicSystem system;
-	EntityKeeper keeper;
-
-
-	const unsigned int tileSize{128};
-
-	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS"};
-	window.setVerticalSyncEnabled(true);
-	
-	sf::Event event;
-	sf::View currentView{sf::Vector2f{0, 0}, sf::Vector2f{1280, 720}};
-
-	bool movingMouseMap{false};
-	float moveView{1.f};
-
-	const unsigned int minZoom{1}, maxZoom{11};
-	unsigned int currentZoom{11};
-	sf::Vector2i oldMousePosition, newMousePosition;
-
-	while(window.isOpen()) {
-
-		//Event
-
-		while(window.pollEvent(event)) {
-
-			if(event.type == sf::Event::Closed) { window.close(); }
-
-			if(event.type == sf::Event::MouseWheelScrolled) {
-
-				if(event.mouseWheelScroll.delta > 0) { 
-
-					if(currentZoom < maxZoom) {
-
-						currentView.zoom(0.8f); 
-						moveView *= 0.8f; 
-						currentZoom++;
-					}
-				}
-
-				if(event.mouseWheelScroll.delta < 0) { 
-
-					if(currentZoom > minZoom) {
-
-						currentView.zoom(1.25f); 
-						moveView *= 1.25f; 
-						currentZoom--;
-					}
-				}
-			}
-
-			if(event.type == sf::Event::MouseButtonPressed) {
-
-				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = true; oldMousePosition = sf::Mouse::getPosition(); } 
-			}
-
-			if(event.type == sf::Event::MouseButtonReleased) {
-
-				if(event.mouseButton.button == sf::Mouse::Left) { movingMouseMap = false; } 
-			}
-		}
-
-		//Update
-
-		system.update(0);
-
-		if(movingMouseMap) {
-
-			newMousePosition = sf::Mouse::getPosition();
-			currentView.move((oldMousePosition.x - newMousePosition.x)*moveView, (oldMousePosition.y - newMousePosition.y)*moveView);
-			oldMousePosition = newMousePosition;
-		}
-
-		//Draw
-
-		window.clear(sf::Color::Black);
-
-		window.setView(currentView);
-		system.drawComponents(window);
-		window.setView(window.getDefaultView());
-
-		window.display();
-	}*/

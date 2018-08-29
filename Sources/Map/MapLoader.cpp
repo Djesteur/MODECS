@@ -75,10 +75,86 @@ std::list<Entity> MapLoader::loadGame(const std::string mapPath, EntityKeeper &k
 	return tiles;
 }
 
-std::list<Entity> MapLoader::loadGraphics(const std::string mapPath, EntityKeeper &keeper, GraphicSystem &graphicSystem) { std::list<Entity> tiles; return tiles; }
-std::list<Entity> MapLoader::loadSounds(const std::string mapPath, EntityKeeper &keeper) { std::list<Entity> tiles; return tiles; }
+std::list<Entity> MapLoader::loadGraphics(const std::string mapPath, EntityKeeper &keeper, GraphicSystem &graphicSystem) { 
 
-/*
+	std::list<Entity> tiles; 
+	const std::string endOfTile{"!!!"};
+
+	const unsigned int tileSize{128};
+
+	std::map<std::string, Entity> exampleTiles{constructExampleTiles("Data/Tiles/TilesPath", keeper, graphicSystem, tileSize)};
+
+	std::ifstream mapFile{mapPath};
+
+	unsigned int currentLine{0};
+
+	try {
+
+		std::ifstream tilesFile{mapPath};
+		if(!tilesFile) { throw "Can't open tiles file \"" + mapPath + "\""; }
+
+		std::string currentData;
+		std::vector<std::string> newInformations;
+		std::map<std::string, std::string> tileInformations;
+
+		while(!tilesFile.eof()) {
+
+			std::getline(tilesFile, currentData);
+			currentLine++;
+
+			while(currentData != endOfTile) {
+
+				newInformations = splitDatas(currentData, '!');
+
+				if(newInformations.size() != 2) { throw "Invalid information format \"" + currentData + "\""; }
+				else { tileInformations.insert(std::make_pair(newInformations[0], newInformations[1])); }
+
+				if(tilesFile.eof()) { throw "Invalid file format"; }
+
+				std::getline(tilesFile, currentData);
+				currentLine++;
+			}
+
+			tiles.push_back(keeper.newEntity());
+
+			extractGraphicInformations(tiles.back(), tileInformations, exampleTiles, graphicSystem);
+
+			tileInformations.clear();
+			newInformations.clear();
+		}
+	}
+
+
+	catch(const std::string &error) { 
+
+		m_logWriter << "ERROR: " << error << " while loading map at line " << currentLine << ".\n";
+
+		for(Entity &currentEntity: tiles) { 
+
+			graphicSystem.deleteEntity(currentEntity);
+			keeper.deleteEntity(currentEntity);
+		}
+
+		tiles.clear();
+	}
+
+	catch(const char *error) { 
+
+		m_logWriter << "ERROR: " << error << " while loading map at line " << currentLine << ".\n";
+
+		for(Entity &currentEntity: tiles) { 
+
+			graphicSystem.deleteEntity(currentEntity);
+			keeper.deleteEntity(currentEntity);
+		}
+
+		tiles.clear();
+	}
+
+	return tiles;
+}
+
+std::list<Entity> MapLoader::loadSounds(const std::string mapPath, EntityKeeper &keeper) { std::list<Entity> tiles; return tiles; }
 
 std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string path, EntityKeeper &keeper, GraphicSystem &system, const unsigned int tileSize) {
 
@@ -99,6 +175,8 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 
 			while(std::getline(examplesPath, currentData)) {
 
+				currentLine++;
+
 				if(currentData != "!!!") {
 
 					std::vector<std::string> splitedDatas{splitDatas(currentData, '!')};
@@ -106,8 +184,6 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 					if(splitedDatas.size() == 2) { tilesPath.insert(std::make_pair(splitedDatas[0], splitedDatas[1])); }
 					else { throw "invalid data at line " + currentLine; }
 				}
-
-				currentLine++;
 			}
 		}
 
@@ -117,7 +193,7 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 
 		std::ifstream currentTileFile;
 		std::string textureName, tileType, currentData;
-		sf::Vector2f texturePositiont;
+		sf::Vector2f texturePosition;
 
 		for(std::pair<std::string, std::string> currentTile: tilesPath) {
 
@@ -171,16 +247,38 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 
 	return examples;
 }
-*/
 
 
-void MapLoader::extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &positionSystem) {
+void MapLoader::extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &positionSystem) {}
 
+void MapLoader::extractGraphicInformations(const Entity &entity, const std::map<std::string, std::string> &informations, std::map<std::string, Entity> exampleTiles, GraphicSystem &graphicSystem) {
 
+	graphicSystem.addEntity(entity);
 
+	const float tileSize{128.f}, distance{tileSize*sqrtf(3.f)/2.f};
+
+	sf::Vector2f position{0.f, 0.f};
+
+	for(std::pair<std::string, std::string> currentInfo: informations) {
+
+		if(currentInfo.first == "Clone") {
+
+			for(std::pair<std::string, Entity> currentExample: exampleTiles) {
+
+				if(currentInfo.second == currentExample.first) { graphicSystem.copyAllComponents(currentExample.second, entity); }
+			}
+		}
+
+		if(currentInfo.first == "PositionX") { std::istringstream(currentInfo.second) >> position.x; std::cout << currentInfo.second << std::endl; }
+		if(currentInfo.first == "PositionY") { std::istringstream(currentInfo.second) >> position.y; }
+	}
+
+	position.x = position.x*distance*3.f + distance*(static_cast<int>(position.y)%2)*3.f/2.f;
+	position.y = position.y*distance*sqrtf(27.f)/2.f;
+
+	graphicSystem.setPosition(entity, position);
 }
 
-/*
 
 std::map<std::string, std::string> MapLoader::constructHexa(const std::string textureName, const sf::Vector2f textureCenter, const unsigned int size) {
 
@@ -286,4 +384,4 @@ std::map<std::string, std::string> MapLoader::constructTriangle(const std::strin
 	componentArguments.insert(std::make_pair("VerticeTexture!2!Y", std::to_string(textureCenter.y + static_cast<float>(C.y))));
 
 	return componentArguments;
-}*/
+}
