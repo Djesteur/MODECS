@@ -7,7 +7,7 @@ INCFILE = Includes
 OBJFILE = Obj
 EXEFILE = .
 
-OUTPUTFILES = Output Output/Graphics Output/Map Output/Entity
+OUTPUTFILES = Output Output/Graphics Output/Map Output/Entity Output/Server Output/Movement Output/Master
 
 DIRECTORIES = $(subst $(SRCFILE),$(OBJFILE),$(shell find $(SRCFILE) -type d))
 

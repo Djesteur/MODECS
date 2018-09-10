@@ -7,8 +7,11 @@ ServerEntityConverter::ServerEntityConverter(EntityKeeper &keeper):
 
 Entity& ServerEntityConverter::newEntity(const unsigned int serverEntity) {
 
-	m_serverConverter.insert(std::make_pair(serverEntity, m_keeper.newEntity()));
-	m_logWriter << "New server entity " << serverEntity << " added as " << m_serverConverter[serverEntity] << "\n"; 
+	if(!exist(serverEntity)) { 
+
+		m_serverConverter.insert(std::make_pair(serverEntity, m_keeper.newEntity()));
+		m_logWriter << "New server entity " << serverEntity << " added as " << m_serverConverter[serverEntity] << "\n"; 
+	}
 
 	return m_serverConverter[serverEntity];
 }

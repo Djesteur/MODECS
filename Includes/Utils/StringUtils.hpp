@@ -10,8 +10,10 @@
 #include <sstream>
 #include <vector>
 #include <iomanip>
+#include <iostream>
 
 std::vector<std::string> splitDatas(const std::string &datas, const char spliter);
 unsigned int convertStringHexToUnsigned(const std::string &hexaString);
+std::string getPartOfMessage(std::string &message);
 
 #endif

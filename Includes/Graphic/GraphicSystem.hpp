@@ -51,7 +51,7 @@ class GraphicSystem {
 
 		//Apply to all components
 		
-		void drawComponents(sf::RenderWindow &window) const;
+		void drawComponents(sf::RenderTarget &target) const;
 		void update(const unsigned int elapsedNanoTime);
 
 	private:

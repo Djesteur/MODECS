@@ -138,13 +138,13 @@ void GraphicSystem::syncTextureRotation(const Entity &entity) {
 
 
 
-void GraphicSystem::drawComponents(sf::RenderWindow &window) const {
+void GraphicSystem::drawComponents(sf::RenderTarget &target) const {
 
 	for(const EntityAndComponent &currentEntity: m_datas) {
 
 		for(const std::unique_ptr<GraphicComponent> &currentComponent: currentEntity.second) {
 
-			window.draw(*currentComponent);
+			target.draw(*currentComponent);
 		}
 	}
 }

@@ -269,12 +269,12 @@ void MapLoader::extractGraphicInformations(const Entity &entity, const std::map<
 			}
 		}
 
-		if(currentInfo.first == "PositionX") { std::istringstream(currentInfo.second) >> position.x; std::cout << currentInfo.second << std::endl; }
+		if(currentInfo.first == "PositionX") { std::istringstream(currentInfo.second) >> position.x; }
 		if(currentInfo.first == "PositionY") { std::istringstream(currentInfo.second) >> position.y; }
 	}
 
-	position.x = position.x*distance*3.f + distance*(static_cast<int>(position.y)%2)*3.f/2.f;
-	position.y = position.y*distance*sqrtf(27.f)/2.f;
+	position.x = position.x*distance*2.f + distance*(static_cast<int>(position.y)%2);
+	position.y = position.y*distance*sqrtf(3.f);
 
 	graphicSystem.setPosition(entity, position);
 }

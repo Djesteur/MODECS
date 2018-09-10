@@ -20,3 +20,20 @@ unsigned int convertStringHexToUnsigned(const std::string &hexaString) {
 
 	return result;
 }
+
+std::string getPartOfMessage(std::string &message) {
+
+	std::string result{message};
+
+	size_t pos{message.find('!')};
+
+	if(pos != std::string::npos) { 
+
+		result = message;
+		result.erase(pos, std::string::npos);
+
+		if(pos+1 < message.size()) { message = message.substr(pos+1); }
+	}
+
+	return result;
+}

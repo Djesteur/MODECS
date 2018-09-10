@@ -8,19 +8,16 @@
 #include <fstream>
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
-#include "Graphic/GraphicSystem.hpp"
-
-#include "Entity/EntityKeeper.hpp"
-
-#include "Map/MapLoader.hpp"
+#include "Master/MasterOfSystems.hpp"
 
 #include "Server/Server.hpp"
 
 void startServer() {
 
 	Server server;
-	server.run(3, sf::Vector2u{3, 3});
+	server.run(4, sf::Vector2u{20, 20});
 }
 
 bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThread) {
@@ -37,7 +34,7 @@ bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThre
 
 		serverThread = std::thread{startServer};
 		ipAdress = "127.0.0.1";
-		std::this_thread::sleep_for(std::chrono::seconds(3)); // Let the server start and be ready for accecpting connections
+		std::this_thread::sleep_for(std::chrono::seconds(2)); // Let the server start and be ready for accecepting connections
 	}
 
 	else { 
@@ -63,7 +60,7 @@ bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThre
 	return false;
 }
 
-void play(sf::TcpSocket &serverConnection, EntityKeeper &keeper, MovementSystem &movementSystem, GraphicSystem &graphicSystem) {
+void play(sf::TcpSocket &serverConnection, MasterOfSystems &master) {
 
 	sf::RenderWindow window{sf::VideoMode{1280, 720}, "MODECS v0.1"};
 	window.setVerticalSyncEnabled(true);
@@ -147,7 +144,7 @@ void play(sf::TcpSocket &serverConnection, EntityKeeper &keeper, MovementSystem 
 			if(serverOrder == "StopGame") { haveToStop = true; }
 		}
 
-		graphicSystem.update(1);
+		master.update(1);
 
 		if(movingMouseMap) {
 
@@ -161,7 +158,7 @@ void play(sf::TcpSocket &serverConnection, EntityKeeper &keeper, MovementSystem 
 		window.clear(sf::Color::Black);
 
 		window.setView(currentView);
-		graphicSystem.drawComponents(window);
+		master.drawGame(window);
 		window.setView(window.getDefaultView());
 
 		window.display();
@@ -175,10 +172,7 @@ int main() {
 	sf::TcpSocket serverConnection;
 	std::thread serverThread;
 
-	EntityKeeper keeper;
-	MovementSystem movementSystem;
-	GraphicSystem graphicSystem;
-	MapLoader loader;
+	MasterOfSystems master{true, true};
 
 	if(connectionToServer(serverConnection, serverThread)) {
 
@@ -196,47 +190,50 @@ int main() {
 
 			packet.clear();
 
-			if(serverOrder == "Downloading") {
+			std::string message{getPartOfMessage(serverOrder)};
 
-				std::cout << "Downloading map..." << std::endl;
+			if(message == "MASTER") { 
 
-				serverConnection.receive(packet);
-				std::string loadedMap;
-				packet >> loadedMap;
-				packet.clear();
+				master.receiveMessage(serverOrder);
 
-				std::ofstream writeMap{"Data/Map/NewMapDownloaded"};
-				writeMap << loadedMap;
-				writeMap.close();
-
-				packet << "Done";
+				packet << "DONE";
 				serverConnection.send(packet);
 				packet.clear();
-
-				std::cout << "Done, waiting others players." << std::endl;
 			}
 
-			if(serverOrder == "Load") {
+			if(message == "PLAYER") {
 
-				std::cout << "Loading map ..." << std::endl;
+				message = getPartOfMessage(serverOrder);
 
-				loader.loadGame("Data/Map/NewMapDownloaded", keeper, movementSystem);
-				loader.loadGraphics("Data/Map/NewMapDownloaded", keeper, graphicSystem);
-				packet << "Done";
-				serverConnection.send(packet);
-				packet.clear();
+				if(message == "DOWNLOAD") {
 
-				std::cout << "Done, waiting others players." << std::endl;
-			}
+					std::cout << "Downloading map..." << std::endl;
 
-			if(serverOrder == "Start") {  
+					serverConnection.receive(packet);
+					std::string loadedMap;
+					packet >> loadedMap;
+					packet.clear();
 
-				std::cout << "Game start" << std::endl;
-				startGame = true; 
+					std::ofstream writeMap{"Data/Map/NewMapDownloaded"};
+					writeMap << loadedMap;
+					writeMap.close();
+
+					packet << "DONE";
+					serverConnection.send(packet);
+					packet.clear();
+
+					std::cout << "Done, waiting others players." << std::endl;
+				}
+
+				if(message == "START") {
+
+					std::cout << "Game start" << std::endl;
+					startGame = true;
+				}
 			}
 		}
 
-		play(serverConnection, keeper, movementSystem, graphicSystem);
+		play(serverConnection, master);
 	}
 
 	else { std::cout << "Can't connect to the server." << std::endl; }
@@ -245,3 +242,5 @@ int main() {
 	
 	return 0;
 }
+
+//MOUVEMENT !!!!!!!!!!!!!!!!!

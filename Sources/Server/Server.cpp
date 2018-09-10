@@ -27,10 +27,14 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 		m_logWriter << "Server Start\n";
 
 		createNewMap(nbPlayers, mapSize, "Data/Map/NewMap");
+
+		m_logWriter << "Game created, loading the game.\n";
 		loadGame("Data/Map/NewMap");
 		prepareMapForPlayers("Data/Map/NewMap");
 
 		m_players.reserve(nbPlayers);
+
+		m_logWriter << "Game loaded, waiting players.\n";
 
 		while(!m_gameStarted) { waitConnections(nbPlayers); }
 
@@ -180,7 +184,7 @@ void Server::playersLoadGame() {
 
 	m_logWriter << "Players downloading the map ...\n";
 
-	sendToAll("Downloading");
+	sendToAll("PLAYER!DOWNLOAD");
 	sendToAll(m_loadedMap);
 
 	unsigned int nbDone{0};
@@ -190,7 +194,7 @@ void Server::playersLoadGame() {
 
 		result = waitMessage();
 
-		if(result.first != 0 && result.second == "Done") { 
+		if(result.first != 0 && result.second == "DONE") { 
 
 			nbDone++; 
 			m_logWriter << "Player " << result.first << " downloaded the map.\n";
@@ -199,7 +203,7 @@ void Server::playersLoadGame() {
 
 	m_logWriter << "Done\nPlayers loading the map ...\n";
 
-	sendToAll("Load");
+	sendToAll("MASTER!LOAD");
 
 	loadGame("Data/Map/NewMap");
 
@@ -209,14 +213,14 @@ void Server::playersLoadGame() {
 
 		result = waitMessage();
 
-		if(result.first != 0 && result.second == "Done") { 
+		if(result.first != 0 && result.second == "DONE") { 
 
 			nbDone++; 
 			m_logWriter << "Player " << result.first << " loaded the map.\n";
 		}
 	}
 
-	sendToAll("Start");
+	sendToAll("PLAYER!START");
 
 	m_logWriter << "Done\n";
 }
