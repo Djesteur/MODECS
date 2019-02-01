@@ -17,7 +17,7 @@
 void startServer() {
 
 	Server server;
-	server.run(4, sf::Vector2u{20, 20});
+	server.run(1, sf::Vector2u{30, 30});
 }
 
 bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThread) {
@@ -34,7 +34,7 @@ bool connectionToServer(sf::TcpSocket &serverConnection, std::thread &serverThre
 
 		serverThread = std::thread{startServer};
 		ipAdress = "127.0.0.1";
-		std::this_thread::sleep_for(std::chrono::seconds(2)); // Let the server start and be ready for accecepting connections
+		std::this_thread::sleep_for(std::chrono::seconds(2)); // Let the server start and be ready for accepting connections
 	}
 
 	else { 
@@ -243,4 +243,8 @@ int main() {
 	return 0;
 }
 
-//MOUVEMENT !!!!!!!!!!!!!!!!!
+// MOUVEMENT !!!!!!!!!!!!!!!!!
+// héritage system - fils
+// Composants de mouvement
+// Ajout d'un composant en graphic pour savoir si l'on doit affiché (automatiquement ajouté avec l'entité)
+// tableau par entité pour savoir si telle entité posséde tel composant ? (pas sûr d'en avoir besoin pour l'instant, peut être lorsqu'il y aurat bc d'entité ?)

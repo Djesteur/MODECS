@@ -9,21 +9,17 @@
 #include <list>
 #include <string>
 #include <utility>
+#include <map>
+#include <tuple>
 
 #include <SFML/System/Vector3.hpp>
+#include <SFML/System/Vector2.hpp>
 
 #include "Entity/Entity.hpp"
 
 #include "LogWriter.hpp"
 
-using MovementEntityAndComponent = std::pair<Entity, std::array<sf::Vector3i, 2>>;
-
-/*
-	0: 2D position (z = 0 all times)
-	1: Cube Position
-*/
-
-using MapEntityAndComponent = std::pair<Entity, std::list<unsigned int>>;
+using MovementDatas = std::tuple<sf::Vector3i, bool, unsigned int, unsigned int, bool, unsigned int>;
 
 class MovementSystem {
 
@@ -36,26 +32,36 @@ class MovementSystem {
 
 		//Adding, copying and deleting
 
-		void addMovableEntity(const Entity &entity);
-		void addMapEntity(const Entity &entity);
+		void addEntity(const Entity &entity, const sf::Vector3i &pos, const bool canMove, const unsigned int maxMove, const bool canPassHere, const unsigned int travelCost);
+
+		void copyAllComponents(const Entity &from, const Entity &to);
 
 		void deleteEntity(const Entity &entity);
 
 		//Checkers
 
 		bool isInSystem(const Entity &entity);
-		bool haveComponent(const Entity &entity, const std::string &name);
 
-		//Move
+		std::vector<Entity> somethingHere(const sf::Vector3i position);
 
-		void goToPosition(const Entity &object, const Entity &position);
+		//Moving
+
+		void setPosition(const Entity &entity, const sf::Vector3i position);
 
 	private:
 
 		LogWriter m_logWriter;
 
-		std::list<MovementEntityAndComponent> m_movableDatas; // Only objects who can move
-		std::list<MapEntityAndComponent> m_mapDatas; // All objects
+		std::map<Entity, MovementDatas> m_datas;
 };
 
+sf::Vector3i convertToCube(const sf::Vector2i &position);
+
 #endif
+
+//Position
+//Peut bouger
+//Déplacement actuel
+//Déplacement max
+//Peut être traversé
+//Coût pour traverser

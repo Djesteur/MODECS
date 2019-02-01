@@ -41,6 +41,9 @@ std::list<Entity> MapLoader::loadGame(const std::string mapPath, EntityKeeper &k
 			tiles.push_back(keeper.newEntity());
 
 			extractMovementInformations(tiles.back(), tileInformations, movementSystem);
+
+			newInformations.clear();
+			tileInformations.clear();
 		}
 
 		if(currentData != endOfTile) { m_logWriter << "WARNING: the tile file have a bad end line.\n"; }
@@ -52,7 +55,7 @@ std::list<Entity> MapLoader::loadGame(const std::string mapPath, EntityKeeper &k
 
 		for(Entity &currentEntity: tiles) { 
 
-			//movementSystem.deleteEntity(currentEntity);
+			movementSystem.deleteEntity(currentEntity);
 			keeper.deleteEntity(currentEntity);
 		}
 
@@ -65,7 +68,7 @@ std::list<Entity> MapLoader::loadGame(const std::string mapPath, EntityKeeper &k
 
 		for(Entity &currentEntity: tiles) { 
 
-			//movementSystem.deleteEntity(currentEntity);
+			movementSystem.deleteEntity(currentEntity);
 			keeper.deleteEntity(currentEntity);
 		}
 
@@ -249,7 +252,18 @@ std::map<std::string, Entity> MapLoader::constructExampleTiles(const std::string
 }
 
 
-void MapLoader::extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &positionSystem) {}
+void MapLoader::extractMovementInformations(const Entity &entity, const std::map<std::string, std::string> &informations, MovementSystem &movementSystem) {
+
+	sf::Vector2i position{0, 0};
+
+	for(std::pair<std::string, std::string> currentInfo: informations) {
+
+		if(currentInfo.first == "PositionX") { std::istringstream(currentInfo.second) >> position.x; }
+		if(currentInfo.first == "PositionY") { std::istringstream(currentInfo.second) >> position.y; }
+	}
+
+	movementSystem.addEntity(entity, convertToCube(position), false, 0, true, 1);
+}
 
 void MapLoader::extractGraphicInformations(const Entity &entity, const std::map<std::string, std::string> &informations, std::map<std::string, Entity> exampleTiles, GraphicSystem &graphicSystem) {
 

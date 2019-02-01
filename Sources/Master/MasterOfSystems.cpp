@@ -9,7 +9,7 @@ MasterOfSystems::MasterOfSystems(const bool wantGraphics, const bool wantSounds)
 
 void MasterOfSystems::receiveMessage(std::string message) {
 
-	m_logWriter << "Receive message: \"" << message << "\"\n";
+	m_logWriter << "Received message: \"" << message << "\"\n";
 
 	std::string extractedOrder{getPartOfMessage(message)};
 

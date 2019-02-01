@@ -58,6 +58,7 @@ Entity::~Entity() {
 
 
 bool Entity::operator==(const Entity& entity) const { return (m_ID == entity.m_ID); }
+bool Entity::operator<(const Entity &entity) const { return (m_ID < entity.m_ID); }
 
 void Entity::changeParent(Entity &parent) { 
 

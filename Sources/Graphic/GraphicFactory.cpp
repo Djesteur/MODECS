@@ -1,8 +1,8 @@
 #include "Graphic/GraphicFactory.hpp"
 
-GraphicFactory::GraphicFactory(): m_logWriter{"Output/Graphics/Factory"} {}
+GraphicFactory::GraphicFactory(const std::string logPath): m_logWriter{logPath} {}
 
-std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std::map<std::string, std::string> &factoryParam) {
+std::unique_ptr<GraphicComponent> GraphicFactory::newComponent(const std::map<std::string, std::string> &factoryParam) {
 
 	std::unique_ptr<GraphicComponent> newComponent{nullptr};
 
@@ -29,7 +29,7 @@ std::unique_ptr<GraphicComponent> GraphicFactory::newGraphicComponent(const std:
 
 	catch(const std::string &error) {  m_logWriter << "ERROR: " << error << " with arguments:\n"; }
 
-	writeArgumentsToLog(factoryParam); //Must be writing with or without errors
+	writeArgumentsToLog(factoryParam);
 
 	return newComponent;
 }
@@ -144,24 +144,19 @@ std::unique_ptr<GraphicComponent> GraphicFactory::createVertexArrayComponent(con
 
 bool GraphicFactory::checkArguments(const std::map<std::string, std::string> &factoryParam, const std::vector<std::string> argumentsToCheck) {
 
-	bool result{true};
+	for(std::string currentArgument: argumentsToCheck) {
 
-	for(const std::string &currentArgument: argumentsToCheck) {
-
-		if(factoryParam.find(currentArgument) == factoryParam.end()) { 
-
-			m_logWriter << "ERROR: missing argument " + currentArgument + ".\n";
-			result = false;
-		}
+		if(factoryParam.find(currentArgument) == factoryParam.end()) { return false; }
 	}
 
-	return result;
+	return true;
 }
 
 void GraphicFactory::writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam) {
 
-	for(std::pair<std::string, std::string> currentPair: factoryParam) {
+	for(std::pair<std::string, std::string> currentParam: factoryParam) {
 
-		m_logWriter << "\t" + currentPair.first << ": " << currentPair.second << "\n";
+		m_logWriter << '\t' << currentParam.first << " " << currentParam.second << '\n'; 
 	}
+
 }

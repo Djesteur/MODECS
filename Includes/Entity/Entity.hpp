@@ -23,6 +23,7 @@ class Entity {
 		~Entity();
 
 		bool operator==(const Entity &entity) const;
+		bool operator<(const Entity &entity) const;
 
 		bool isValid() const;
 

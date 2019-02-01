@@ -21,12 +21,9 @@ class GraphicFactory {
 
 	public:
 
-		GraphicFactory(const GraphicFactory &) = delete;
-		GraphicFactory &operator=(const GraphicFactory &) = delete;
+		GraphicFactory(const std::string logPath);
 
-		GraphicFactory();
-
-		std::unique_ptr<GraphicComponent> newGraphicComponent(const std::map<std::string, std::string> &factoryParam);
+		virtual std::unique_ptr<GraphicComponent> newComponent(const std::map<std::string, std::string> &factoryParam);
 
 	private:
 
@@ -34,7 +31,6 @@ class GraphicFactory {
 		std::unique_ptr<GraphicComponent> createVertexArrayComponent(const std::map<std::string, std::string> &factoryParam);
 
 		bool checkArguments(const std::map<std::string, std::string> &factoryParam, const std::vector<std::string> argumentsToCheck);
-
 		void writeArgumentsToLog(const std::map<std::string, std::string> &factoryParam);
 
 		TextureKeeper m_textureKeeper;

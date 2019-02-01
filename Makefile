@@ -1,5 +1,5 @@
 CXX      = g++
-CXXFLAGS = -std=c++1z -Wextra -Wall -pedantic -g -O2 
+CXXFLAGS = -g -std=c++1z -Wextra -Wall -pedantic
 LDFLAGS  = -L /usr/local/lib -lsfml-system -lsfml-window -lsfml-graphics -lsfml-network -lpthread
 
 SRCFILE = Sources

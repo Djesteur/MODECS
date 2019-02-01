@@ -1,6 +1,7 @@
 #include "Graphic/GraphicSystem.hpp"
 
 GraphicSystem::GraphicSystem(): 
+	m_factory{"Output/Graphics/Factory"},
 	m_logWriter{"Output/Graphics/System"},
 	m_lastResearchEntity{m_datas.end()} {}
 
@@ -8,7 +9,7 @@ void GraphicSystem::addComponent(const Entity &entity, std::map<std::string, std
 
 	if(isInSystem(entity)) {
 
-		std::unique_ptr<GraphicComponent> newComponent{m_factory.newGraphicComponent(factoryParam)};
+		std::unique_ptr<GraphicComponent> newComponent{m_factory.newComponent(factoryParam)};
 
 		if(newComponent != nullptr) { 
 

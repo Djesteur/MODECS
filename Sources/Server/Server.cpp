@@ -28,8 +28,7 @@ void Server::run(const unsigned int nbPlayers, const sf::Vector2u mapSize) {
 
 		createNewMap(nbPlayers, mapSize, "Data/Map/NewMap");
 
-		m_logWriter << "Game created, loading the game.\n";
-		loadGame("Data/Map/NewMap");
+		m_logWriter << "Game created, preparing for players.\n";
 		prepareMapForPlayers("Data/Map/NewMap");
 
 		m_players.reserve(nbPlayers);
@@ -175,7 +174,6 @@ void Server::prepareMapForPlayers(const std::string mapPath) {
 
 			m_loadedMap += currentData;
 			if(!map.eof()) { m_loadedMap +=  "\n"; }
-
 		}
 	}
 }
